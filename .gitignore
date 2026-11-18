@@ -9,3 +9,4 @@ results/**/oracle-logs/
 .DS_Store
 tools/index-query/Package.resolved
 results/**/oracle-worktree/
+results/**/run.log

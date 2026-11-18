@@ -1,5 +1,7 @@
 # Running the study
 
+For the final runs on a Mac, follow [mac-mini.md](mac-mini.md) step by step.
+
 ## Selection only (any machine)
 
 ```bash

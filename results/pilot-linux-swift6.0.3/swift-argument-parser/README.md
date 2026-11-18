@@ -16,4 +16,4 @@ The 60 first-parent commits ending at `d7b6cebecb27`, plus 31 seeded bugs on the
 
 Small subject, short history: read these as a check that the harness works end to end, not as the study's answer. The larger subjects (swift-nio, swift-syntax) are where deciding time can pay off.
 
-Reproduce: `python scripts/study.py <clone> d7b6cebecb27 60 results/swift-argument-parser`, then `python scripts/analyze.py results/swift-argument-parser`.
+Reproduce: `python scripts/study.py <clone> d7b6cebecb27 60 <out dir>`, then `python scripts/analyze.py <out dir>`.
