@@ -37,6 +37,8 @@ struct Request: Decodable {
     let changes: [Change]
     let addedNames: [String]
     let maxDepth: Int?
+    /// Follow references into other modules too, not only inside the module that defines each symbol.
+    let acrossModules: Bool?
 }
 
 struct Resolved: Encodable {
@@ -158,7 +160,8 @@ for usr in Array(seeds) {
 }
 response.seedSymbols = seeds.count
 
-// 3. References, followed inside the defining module to the declarations that contain them.
+// 3. References, followed inside the defining module to the declarations that contain them
+//    (and into other modules too when the request sets acrossModules).
 var visited = seeds
 var frontier = Array(seeds)
 var depth = 0
@@ -171,15 +174,17 @@ while !frontier.isEmpty && depth < maxDepth {
         let home = moduleOf[usr]
         for occ in db.occurrences(ofUSR: usr, roles: referenceRoles) where !occ.location.isSystem {
             response.files[occ.location.path] = occ.location.moduleName
-            guard occ.location.moduleName == home, !occ.roles.contains(.definition) else { continue }
+            guard request.acrossModules == true || occ.location.moduleName == home,
+                  !occ.roles.contains(.definition) else { continue }
+            let containerModule = occ.location.moduleName
             for rel in occ.relations where rel.roles.contains(.calledBy) || rel.roles.contains(.containedBy) {
                 var containers = [rel.symbol.usr]
                 containers += owningProperty(of: rel.symbol.usr)
                 for container in containers where visited.insert(container).inserted {
-                    moduleOf[container] = home
+                    moduleOf[container] = containerModule
                     next.append(container)
                     for related in overrideFamily(of: container) where visited.insert(related).inserted {
-                        moduleOf[related] = home
+                        moduleOf[related] = containerModule
                         next.append(related)
                     }
                 }

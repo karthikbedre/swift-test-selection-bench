@@ -78,9 +78,12 @@ def find_libindexstore() -> str:
 class CompilerIndex(Selector):
     name = "compiler-index"
 
-    def __init__(self, cache_dir: str | None = None, own_tests_always: bool = True):
+    def __init__(self, cache_dir: str | None = None, own_tests_always: bool = True, across_modules: bool = False):
         self.cache_dir = Path(cache_dir or os.environ.get("TSEL_CACHE", Path.home() / ".cache" / "tsel"))
         self.own_tests_always = own_tests_always
+        # follow references into downstream modules too; the extra files only feed the test-class pass,
+        # since the targets they add are already dependents of the first ones
+        self.across_modules = across_modules
         self._facts = TreeSitterSelector._facts
 
     # -- index build ----------------------------------------------------------------------------
@@ -159,15 +162,20 @@ class CompilerIndex(Selector):
 
     # -- selection ------------------------------------------------------------------------------
     def _select(self, changes: ChangeSet, graph: Graph) -> Selection:
+        # evidence for the test-class pass (tsel/units.py); not part of the target selection
+        self.hints = {"files": set(), "referring": set(), "whole": set(), "test_files": set()}
         r = route(changes, graph)
         if r.all_tests_reasons:
+            self.hints["whole"] = set(graph.test_targets())
             return Selection(self.name, graph.test_targets(), all_tests=True, rules=r.all_tests_reasons)
 
         rules: list[str] = []
         tests: set[str] = set(r.test_targets)
+        self.hints["test_files"] = {f.path for f in changes.files if graph.owner_of(f.path) in r.test_targets}
         for origin, reasons in r.coarse_origins.items():
             rules.extend(f"fallback:{x}" for x in reasons)
             tests |= self.graph_tests(graph, {origin})
+            self.hints["whole"] |= self.graph_tests(graph, {origin})
         if not r.source_changes:
             return Selection(self.name, tests, rules=rules)
 
@@ -175,6 +183,7 @@ class CompilerIndex(Selector):
             wt, store, build_secs = self._ensure_index(changes, graph)
         except IndexUnavailable as e:
             rules.append(f"fallback:index-unavailable:{e}")
+            self.hints["whole"] |= self.graph_tests(graph, set(r.source_changes))
             return Selection(self.name, tests | self.graph_tests(graph, set(r.source_changes)), rules=rules)
         rules.append(f"index-build-seconds:{build_secs:.1f}")
         wt_real = os.path.realpath(wt)
@@ -193,13 +202,15 @@ class CompilerIndex(Selector):
                     continue
                 with tempfile.TemporaryDirectory() as dbdir:
                     resp = self._query({"store": store, "database": dbdir, "library": find_libindexstore(),
-                                        "changes": items, "addedNames": sorted(set(added)), "maxDepth": 50})
+                                        "changes": items, "addedNames": sorted(set(added)), "maxDepth": 50,
+                                        "acrossModules": self.across_modules})
                 if resp.get("unresolved"):
                     u = resp["unresolved"][0]
                     raise _Fallback(f"not-in-index:{os.path.relpath(u['path'], wt_real)}:{u['startLine']}")
             except (_Fallback, IndexUnavailable) as fb:
                 rules.append(f"fallback:{fb}")
                 tests |= self.graph_tests(graph, {origin})
+                self.hints["whole"] |= self.graph_tests(graph, {origin})
                 continue
 
             referring: set[str] = set()
@@ -210,8 +221,10 @@ class CompilerIndex(Selector):
                 owner = graph.owner_of(rel)
                 if owner is not None and owner in bound and owner != origin:
                     referring.add(owner)
+                    self.hints["files"].add(rel)
             rules.append(f"index:{graph.targets[origin].name}:symbols={resp.get('visitedSymbols', 0)}"
                          f":targets={len(referring)}")
+            self.hints["referring"] |= referring
             affected = graph.transitive_dependents(referring)
             if self.own_tests_always:
                 affected |= {tid for tid in bound if graph.targets[tid].is_test and origin in graph.targets[tid].deps

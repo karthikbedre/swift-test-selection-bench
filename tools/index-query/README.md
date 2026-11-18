@@ -44,7 +44,7 @@ One JSON request on stdin, one JSON response on stdout.
 - `nearest`: the last definition at or above `startLine`, for ranges the selector could not map to a declaration.
 - `addedNames`: declarations that exist only at head. Existing symbols with the same base name are treated as changed, because a new overload can win resolution at an existing call site.
 
-The response lists `files` (path to module), the changes it resolved and those it could not, and how many symbols it seeded and visited. Inside the changed module, references are followed to the declarations that contain them until nothing new turns up, so a change to an internal helper reaches the public API that uses it. Protocol requirements and the declarations that satisfy or override them are followed both ways.
+The response lists `files` (path to module), the changes it resolved and those it could not, and how many symbols it seeded and visited. Inside the changed module, references are followed to the declarations that contain them until nothing new turns up, so a change to an internal helper reaches the public API that uses it. With `"acrossModules": true` they are followed into other modules too; the test-class pass uses this to find the test files a change reaches through intermediate modules. Protocol requirements and the declarations that satisfy or override them are followed both ways.
 
 ## What it cannot see
 

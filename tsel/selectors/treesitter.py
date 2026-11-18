@@ -138,16 +138,21 @@ class TreeSitterSelector(Selector):
 
     # -- step 4-5 -----------------------------------------------------------------------------
     def _select(self, changes: ChangeSet, graph: Graph) -> Selection:
+        # evidence for the test-class pass (tsel/units.py); not part of the target selection
+        self.hints = {"names": set(), "spellers": set(), "whole": set(), "test_files": set()}
         r = route(changes, graph)
         if r.all_tests_reasons:
+            self.hints["whole"] = set(graph.test_targets())
             return Selection(self.name, graph.test_targets(), all_tests=True, rules=r.all_tests_reasons)
 
         rules: list[str] = []
         tests: set[str] = set(r.test_targets)
+        self.hints["test_files"] = {f.path for f in changes.files if graph.owner_of(f.path) in r.test_targets}
 
         for origin, reasons in r.coarse_origins.items():
             rules.extend(f"fallback:{x}" for x in reasons)
             tests |= self.graph_tests(graph, {origin})
+            self.hints["whole"] |= self.graph_tests(graph, {origin})
 
         for origin, files in r.source_changes.items():
             bound = graph.transitive_dependents({origin})
@@ -165,6 +170,7 @@ class TreeSitterSelector(Selector):
             except Fallback as fb:
                 rules.append(f"fallback:{fb}")
                 tests |= self.graph_tests(graph, {origin})
+                self.hints["whole"] |= self.graph_tests(graph, {origin})
                 continue
 
             if names:
@@ -176,6 +182,24 @@ class TreeSitterSelector(Selector):
 
             spellers = {tid for tid in bound if tid != origin
                         and any(fx.spelled & names for fx in facts_by_target[tid])}
+            # for the test-class pass: spread the names through downstream modules' declarations that use
+            # them, so a test reached through an intermediate module is matched by the names it spells
+            reach = set(names)
+            while True:
+                grown = set(reach)
+                for tid in bound - {origin}:
+                    if graph.targets[tid].is_test:
+                        continue
+                    facts = facts_by_target[tid]
+                    using = {d.name for fx in facts for d in fx.decls if d.uses & grown}
+                    if using - grown:
+                        grown |= _propagate_within(using, facts, protocols)
+                if grown == reach:
+                    break
+                reach = grown
+            self.hints["names"] |= reach
+            self.hints["spellers"] |= spellers | {tid for tid in bound if graph.targets[tid].is_test
+                                                  and any(fx.spelled & reach for fx in facts_by_target[tid])}
             affected = graph.transitive_dependents(spellers)
             if self.own_tests_always:
                 own = {tid for tid in bound if graph.targets[tid].is_test and origin in graph.targets[tid].deps
