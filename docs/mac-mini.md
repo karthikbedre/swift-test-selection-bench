@@ -81,7 +81,7 @@ Each run keeps the Mac awake (`caffeinate`). If a run is interrupted, run the sa
 
 | File | What it holds |
 |---|---|
-| `machine.json` | Mac model, chip, cores, memory, macOS, Xcode and Swift versions, harness commit |
+| `machine.json` | Mac model, chip, cores, memory, macOS, Xcode and Swift versions, the indexstore-db branch the index tool was built against, harness commit |
 | `selections.jsonl` | For every commit and seeded bug: what each selector chose, its rules and its deciding time (the compiler index's build time included) |
 | `oracle.jsonl` | For every commit and seeded bug: build time, and every test target's result and time, failures re-run twice |
 | `summary.txt` | Tests selected, test time, deciding time, fallbacks and bugs missed, per selector |

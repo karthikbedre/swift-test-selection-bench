@@ -24,6 +24,9 @@ else
   power=""
 fi
 
+here="$(cd "$(dirname "$0")/.." && pwd)"
+indexstore=$(cat "$here/tools/index-query/.build/indexstore-db-branch" 2>/dev/null || echo "")
+
 cat <<EOF
 {
   "recorded_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
@@ -36,6 +39,7 @@ cat <<EOF
   "xcode": $(echo "$xcode" | json),
   "swift": $(swift --version 2>&1 | head -1 | json),
   "power": $(echo "$power" | json),
-  "harness_commit": "$(git -C "$(dirname "$0")/.." rev-parse HEAD)"
+  "indexstore_db_branch": $(echo "$indexstore" | json),
+  "harness_commit": "$(git -C "$here" rev-parse HEAD)"
 }
 EOF
