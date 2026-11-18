@@ -1,0 +1,16 @@
+real commits / mutants: 300 {'killed': 104, 'survived': 65, 'no-build': 5}
+zero-test targets: ['ArgumentParserExampleTests', 'ArgumentParserGenerateDoccReferenceTests', 'ArgumentParserGenerateManualTests', 'ArgumentParserPackageManagerTests', 'ArgumentParserToolInfoTests', 'ArgumentParserUnitTests']
+run-all         commits=300 share=1.00 empty=0 test_s=4319/4319 overhead_s=0 fallback_commits=0 real_missed=0 mutants_missed=0/104
+package-graph   commits=300 share=0.71 empty=58 test_s=3183/4319 overhead_s=0 fallback_commits=0 real_missed=0 mutants_missed=2/104
+    missed: false-to-true Examples/count-lines/CountLines.swift:27 killers=['ArgumentParserExampleTests', 'ArgumentParserGenerateDoccReferenceTests', 'ArgumentParserGenerateManualTests']
+    missed: plus-one Tools/generate-docc-reference/Extensions/ArgumentParser+Markdown.swift:136 killers=['ArgumentParserGenerateDoccReferenceTests']
+tree-sitter     commits=300 share=0.68 empty=64 test_s=3062/4319 overhead_s=249 fallback_commits=88 real_missed=0 mutants_missed=2/104
+    missed: false-to-true Examples/count-lines/CountLines.swift:27 killers=['ArgumentParserExampleTests', 'ArgumentParserGenerateDoccReferenceTests', 'ArgumentParserGenerateManualTests']
+    missed: plus-one Tools/generate-docc-reference/Extensions/ArgumentParser+Markdown.swift:136 killers=['ArgumentParserGenerateDoccReferenceTests']
+compiler-index  commits=300 share=0.66 empty=66 test_s=2929/4319 overhead_s=518 fallback_commits=40 real_missed=0 mutants_missed=2/104
+    missed: false-to-true Examples/count-lines/CountLines.swift:27 killers=['ArgumentParserExampleTests', 'ArgumentParserGenerateDoccReferenceTests', 'ArgumentParserGenerateManualTests']
+    missed: plus-one Tools/generate-docc-reference/Extensions/ArgumentParser+Markdown.swift:136 killers=['ArgumentParserGenerateDoccReferenceTests']
+interface-only  commits=300 share=0.52 empty=81 test_s=2369/4319 overhead_s=8 fallback_commits=0 real_missed=0 mutants_missed=3/104
+    missed: ne-to-eq Sources/ArgumentParser/Usage/HelpGenerator.swift:299 killers=['ArgumentParserEndToEndTests', 'ArgumentParserExampleTests', 'ArgumentParserPackageManagerTests', 'ArgumentParserUnitTests']
+    missed: false-to-true Examples/count-lines/CountLines.swift:27 killers=['ArgumentParserExampleTests', 'ArgumentParserGenerateDoccReferenceTests', 'ArgumentParserGenerateManualTests']
+    missed: plus-one Tools/generate-docc-reference/Extensions/ArgumentParser+Markdown.swift:136 killers=['ArgumentParserGenerateDoccReferenceTests']
