@@ -73,7 +73,7 @@ tsel oracle ../swift-nio <commit> --out results/swift-nio/oracle.jsonl
 tsel score results/swift-nio/selections.jsonl results/swift-nio/oracle.jsonl --csv results/swift-nio/scores.csv
 ```
 
-Full steps, including what still needs a Mac: [docs/running.md](docs/running.md).
+Full steps: [docs/running.md](docs/running.md). Final runs on a Mac: [docs/mac-mini.md](docs/mac-mini.md).
 
 When `swift` is on `PATH`, the package graph comes from `swift package dump-package`. Without it, a Tree-sitter reader of `Package.swift` is used and results are marked approximate.
 
@@ -100,7 +100,7 @@ tests/                    unit tests
 
 ## Status
 
-- Working: change reading, both package-graph loaders, run-all, package-graph, Tree-sitter and compiler-index selectors, replay, oracle runner, scoring, first trap, seeded bugs, a first full run on swift-argument-parser ([results](results/swift-argument-parser/README.md)).
+- Working: change reading, both package-graph loaders, run-all, package-graph, Tree-sitter and compiler-index selectors, replay, oracle runner, scoring, first trap, seeded bugs, a first full run on swift-argument-parser ([results](results/pilot-linux-swift6.0.3/swift-argument-parser/README.md)).
 - Next: test-file level selection for subjects with few large test targets, SwiftParser variant of the syntax selector, mutation runs, the full trap set, hash-based caching on the sample app.
 
 Findings will be shared with the maintainers of each selector tool before publication.

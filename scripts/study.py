@@ -20,6 +20,9 @@ insts = {n: SELECTORS[n]() for n in names}
 wt = str(out / "oracle-worktree")
 random.seed(7)
 revs = commits(repo, end, count + 1)
+done = set()
+if (out / "selections.jsonl").exists():   # resume an interrupted run
+    done = {json.loads(l)["head"] for l in open(out / "selections.jsonl") if '"kind": "real"' in l}
 sel_fh = open(out / "selections.jsonl", "a")
 
 
@@ -35,6 +38,8 @@ def select(base, head, kind, meta):
 
 
 for i, (base, head) in enumerate(zip(revs, revs[1:])):
+    if head in done:
+        continue
     t0 = time.time()
     select(base, head, "real", {})
     run_oracle(repo, head, str(out / "oracle.jsonl"), worktree=wt)
