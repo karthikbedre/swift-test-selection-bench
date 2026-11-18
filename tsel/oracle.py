@@ -14,6 +14,7 @@ import time
 from pathlib import Path
 
 from .graph import load_graph
+from .pins import apply_pins, pins
 
 
 def _run(cmd: list[str], cwd: str, timeout: int) -> tuple[int, float, str]:
@@ -44,7 +45,10 @@ def run_oracle(repo: str, rev: str, out_path: str, package_dirs: list[str] | Non
     try:
         graph = load_graph(str(wt), package_dirs)
         record: dict = {"rev": rev, "build": {}, "targets": {}}
+        if pins():
+            record["pins"] = [f"{n}={v}" for n, v in pins()]
         for d in package_dirs:
+            apply_pins(str(wt / d))
             code, secs, log = _run(["swift", "build", "--build-tests"], str(wt / d), timeout)
             record["build"][d] = {"code": code, "seconds": round(secs, 2), "log_tail": log if code else ""}
         for tid in sorted(graph.test_targets()):

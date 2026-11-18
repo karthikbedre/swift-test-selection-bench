@@ -9,6 +9,8 @@
       "package_dirs": ["."],
       "platforms": ["linux", "macos"],
       "role": "deep graph with one central module (NIOCore): the shared-package case",
+      "dependency_pins": {"swift-system": "1.6.6"},
+      "_pins_why": "swift-system 1.7.0 made FileType public; it clashes with NIOFS.FileType in NIOFSIntegrationTests, and swift-nio commits no Package.resolved",
       "toolchain": null
     },
     {

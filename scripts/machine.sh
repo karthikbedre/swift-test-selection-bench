@@ -43,6 +43,7 @@ cat <<EOF
   "swift": $(swift --version 2>&1 | head -1 | json),
   "power": $(echo "$power" | json),
   "indexstore_db_branch": $(echo "$indexstore" | json),
+  "dependency_pins": $(echo "${TSEL_PINS:-}" | json),
   "harness_commit": "$(git -C "$here" rev-parse HEAD)"
 }
 EOF

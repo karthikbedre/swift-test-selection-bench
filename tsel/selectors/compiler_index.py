@@ -34,6 +34,7 @@ from pathlib import Path
 
 from ..changes import ChangeSet, FileChange
 from ..graph import Graph
+from ..pins import apply_pins
 from ..swiftdecl import innermost
 from .base import Selection, Selector, route
 from .treesitter import TreeSitterSelector
@@ -98,7 +99,9 @@ class CompilerIndex(Selector):
             subprocess.run(["git", "-C", str(wt), "checkout", "--force", "--detach", changes.base],
                            check=True, capture_output=True)
             subprocess.run(["git", "-C", str(wt), "clean", "-fdq"], check=True, capture_output=True)
+        pinning = 0.0
         for pkg in graph.packages:
+            pinning += apply_pins(str(wt / pkg.dir))
             r = subprocess.run(["swift", "build", "--build-tests", "--enable-index-store"],
                                cwd=str(wt / pkg.dir), capture_output=True, text=True)
             if r.returncode != 0:
@@ -107,7 +110,7 @@ class CompilerIndex(Selector):
         stores = stores or sorted(glob.glob(str(wt / ".build" / "**" / "index" / "store"), recursive=True))
         if not stores:
             raise IndexUnavailable("no index store found after the build")
-        return str(wt), stores[0], time.perf_counter() - t0
+        return str(wt), stores[0], time.perf_counter() - t0 - pinning
 
     def _query(self, request: dict) -> dict:
         r = subprocess.run([find_index_query()], input=json.dumps(request), capture_output=True, text=True)
