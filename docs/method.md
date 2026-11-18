@@ -16,7 +16,19 @@ The contribution is an independent yardstick, not one more selector: five approa
 
 ## Unit of selection
 
-Test targets first, because that is what CI systems run and what every approach can express. For subjects where a few large test targets hold most tests (Vapor, swift-composable-architecture), a second pass selects test files and classes inside a target using the same name rules.
+Test targets first, because that is what CI systems run and what every approach can express. A second pass selects test classes inside the selected targets.
+
+### Test-class pass
+
+The target-level runs showed the selectors converging wherever a hub module sits under most test targets (H6). The second pass asks whether they diverge one level down.
+
+- **Unit.** A test class: an `XCTestCase` subclass, or a swift-testing suite (a type holding `@Test` functions, with or without `@Suite`). A type extended across files is one unit. Top-level `@Test` functions in a target form one unit per target.
+- **Oracle.** Each selected test target still runs once, alone. Per-test results come from the swift-testing XML report (`--xunit-output`) and from XCTest's console lines, which this SwiftPM does not write to XML. A unit fails when any of its tests fails. A seeded bug's killers are the units that fail with it and pass without it.
+- **Run everything, package graph, Bazel hash and interface-only** cannot see inside a target, so they select every unit of the targets they select.
+- **Tree-sitter.** Inside each selected test target, the changed names are first spread through the target's helper declarations (fixtures, extensions, shared setup) until nothing new is added. A unit is selected when one of its files spells one of those names. A target reached only through the chain rule, without spelling any changed name itself, keeps all its units, and that is recorded as a fallback.
+- **Compiler index.** A unit is selected when one of its files appears among the files that refer to the changed declarations, spread through the target's helper files the same way. Targets reached only through the chain rule keep all their units.
+- **Commits.** Only commits and seeded bugs where the package graph did not run everything: the pass measures what finer selection adds where target selection already narrowed.
+- **Measures.** Share of units selected, test time of the selected units, units missed per seeded bug, and the share of selected targets where finer selection fell back to all units.
 
 ## Change reading (shared by all selectors)
 
