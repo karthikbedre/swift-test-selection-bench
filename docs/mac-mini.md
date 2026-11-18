@@ -28,7 +28,7 @@ Each run builds and tests every commit, so plan for long runs and leave the Mac 
 mkdir -p ~/bench && cd ~/bench
 git clone https://github.com/karthikbedre/swift-test-selection-bench
 cd swift-test-selection-bench
-git checkout compiler-index-selector   # only until pull request 1 is merged
+git checkout compiler-index-selector   # only until pull request 2 is merged
 python3.12 -m venv .venv && . .venv/bin/activate
 pip install -e '.[dev]'
 pytest                   # the 3 tests that need the index tool are skipped until step 3
