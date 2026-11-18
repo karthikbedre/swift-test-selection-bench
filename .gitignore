@@ -7,3 +7,4 @@ __pycache__/
 results/**/oracle-logs/
 .tsel-worktree-*/
 .DS_Store
+tools/index-query/Package.resolved
