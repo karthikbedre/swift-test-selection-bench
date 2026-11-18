@@ -112,6 +112,21 @@ def test_docs_change_selects_nothing(sample):
     assert s["package-graph"] == s["tree-sitter"] == set()
 
 
+def test_trap_t001_protocol_default_is_caught(tmp_path):
+    import json
+    trap_dir = ROOT / "traps" / "T001-protocol-default-description"
+    trap = json.loads((trap_dir / "trap.json").read_text())
+    repo = make_repo(tmp_path, trap_dir)
+    e = trap["edit"]
+    base, head = commit_edit(repo, e["file"], e["find"], e["replace"])
+    s = select(repo, base, head)
+    for must in trap["must_select"]:
+        assert must in s["package-graph"]
+        assert must in s["tree-sitter"], s["tree-sitter:rules"]
+    # Reports depends on Core but never touches Formatter, so the syntax selector can skip it.
+    assert s["tree-sitter"] == {"BillingTests"}
+
+
 def test_tree_sitter_never_widens_the_graph(sample):
     for find, rep in [('"\\(name) #\\(id)"', '"\\(name)"'), ("self.code = code", "self.code = code.uppercased()")]:
         path = "Sources/Models/Character.swift" if "name" in find else "Sources/Models/Episode.swift"
