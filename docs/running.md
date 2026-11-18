@@ -83,6 +83,16 @@ scripts/reselect.py ../subjects/swift-argument-parser results/macos/swift-argume
 
 The previous file is kept as `selections.jsonl.bak`.
 
+## Test-class pass
+
+Runs on a finished target-level run, over the commits and seeded bugs where the package graph narrowed:
+
+```bash
+scripts/units-study.py ../subjects/swift-nio results/macos/swift-nio results/macos/swift-nio-classes
+scripts/units-study.py ../subjects/swift-argument-parser results/macos/swift-argument-parser results/macos/swift-argument-parser-classes 60   # 60 commits, spread evenly
+scripts/units-analyze.py results/macos/*-classes
+```
+
 ## Still to do
 
 - Mutation runs with Muter (macOS) on the files each commit changed.
