@@ -2,7 +2,7 @@
 
 ### civitas-classes
 
-24 commits and 4 caught seeded bugs with per-class results.
+24 commits and 4 caught seeded bugs with per-class results. 0 of 1598 reported class results had no matching class in the source and are left out.
 
 | Selector | Share of targets | Share of classes | Class test time selected | Targets kept whole | Seeded bugs missed |
 |---|---|---|---|---|---|
