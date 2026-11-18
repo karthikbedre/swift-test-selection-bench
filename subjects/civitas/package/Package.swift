@@ -1,0 +1,47 @@
+// swift-tools-version: 6.0
+// Civitas, tree topology, as a Swift package for macOS. Copied from ios-modularization-benchmark.
+import PackageDescription
+
+let package = Package(
+    name: "Civitas",
+    platforms: [.macOS(.v14)],
+    targets: [
+        .target(name: "CoreKit", dependencies: [], path: "Modules/CoreKit/Sources"),
+        .target(name: "CoreModels", dependencies: ["CoreKit"], path: "Modules/CoreModels/Sources"),
+        .target(name: "DesignSystem", dependencies: ["CoreKit", "CoreModels"], path: "Modules/DesignSystem/Sources"),
+        .target(name: "DI", dependencies: [], path: "Modules/DI/Sources"),
+        .testTarget(name: "DITests", dependencies: ["DI"], path: "Modules/DI/Tests"),
+        .target(name: "Identity", dependencies: ["CoreKit", "CoreModels", "DesignSystem", "DI"], path: "Modules/Identity", exclude: ["Tests"], sources: ["Sources"], resources: [.process("Resources")]),
+        .testTarget(name: "IdentityTests", dependencies: ["Identity", "CoreKit", "CoreModels", "DesignSystem", "DI"], path: "Modules/Identity/Tests"),
+        .target(name: "Places", dependencies: ["CoreKit", "CoreModels", "DesignSystem", "DI"], path: "Modules/Places", exclude: ["Tests"], sources: ["Sources"], resources: [.process("Resources")]),
+        .testTarget(name: "PlacesTests", dependencies: ["Places", "CoreKit", "CoreModels", "DesignSystem", "DI"], path: "Modules/Places/Tests"),
+        .target(name: "Notifications", dependencies: ["CoreKit", "CoreModels", "DesignSystem", "DI", "Identity"], path: "Modules/Notifications", exclude: ["Tests"], sources: ["Sources"], resources: [.process("Resources")]),
+        .testTarget(name: "NotificationsTests", dependencies: ["Notifications", "CoreKit", "CoreModels", "DesignSystem", "DI", "Identity"], path: "Modules/Notifications/Tests"),
+        .target(name: "Favorites", dependencies: ["CoreKit", "CoreModels", "DesignSystem", "DI", "Identity"], path: "Modules/Favorites", exclude: ["Tests"], sources: ["Sources"], resources: [.process("Resources")]),
+        .testTarget(name: "FavoritesTests", dependencies: ["Favorites", "CoreKit", "CoreModels", "DesignSystem", "DI", "Identity"], path: "Modules/Favorites/Tests"),
+        .target(name: "Agenda", dependencies: ["CoreKit", "CoreModels", "DesignSystem", "DI", "Identity", "Notifications"], path: "Modules/Agenda", exclude: ["Tests"], sources: ["Sources"], resources: [.process("Resources")]),
+        .testTarget(name: "AgendaTests", dependencies: ["Agenda", "CoreKit", "CoreModels", "DesignSystem", "DI", "Identity", "Notifications"], path: "Modules/Agenda/Tests"),
+        .target(name: "Wallet", dependencies: ["CoreKit", "CoreModels", "DesignSystem", "DI", "Identity", "Notifications"], path: "Modules/Wallet", exclude: ["Tests"], sources: ["Sources"], resources: [.process("Resources")]),
+        .testTarget(name: "WalletTests", dependencies: ["Wallet", "CoreKit", "CoreModels", "DesignSystem", "DI", "Identity", "Notifications"], path: "Modules/Wallet/Tests"),
+        .target(name: "Tickets", dependencies: ["CoreKit", "CoreModels", "DesignSystem", "DI", "Wallet", "Identity", "Notifications", "Agenda"], path: "Modules/Tickets", exclude: ["Tests"], sources: ["Sources"], resources: [.process("Resources")]),
+        .testTarget(name: "TicketsTests", dependencies: ["Tickets", "CoreKit", "CoreModels", "DesignSystem", "DI", "Wallet", "Identity", "Notifications", "Agenda"], path: "Modules/Tickets/Tests"),
+        .target(name: "Reservations", dependencies: ["CoreKit", "CoreModels", "DesignSystem", "DI", "Identity", "Notifications", "Agenda"], path: "Modules/Reservations", exclude: ["Tests"], sources: ["Sources"], resources: [.process("Resources")]),
+        .testTarget(name: "ReservationsTests", dependencies: ["Reservations", "CoreKit", "CoreModels", "DesignSystem", "DI", "Identity", "Notifications", "Agenda"], path: "Modules/Reservations/Tests"),
+        .target(name: "Events", dependencies: ["CoreKit", "CoreModels", "DesignSystem", "DI", "Tickets", "Places", "Favorites", "Agenda"], path: "Modules/Events", exclude: ["Tests"], sources: ["Sources"], resources: [.process("Resources")]),
+        .testTarget(name: "EventsTests", dependencies: ["Events", "CoreKit", "CoreModels", "DesignSystem", "DI", "Tickets", "Places", "Favorites", "Agenda"], path: "Modules/Events/Tests"),
+        .target(name: "Dining", dependencies: ["CoreKit", "CoreModels", "DesignSystem", "DI", "Reservations", "Places", "Favorites"], path: "Modules/Dining", exclude: ["Tests"], sources: ["Sources"], resources: [.process("Resources")]),
+        .testTarget(name: "DiningTests", dependencies: ["Dining", "CoreKit", "CoreModels", "DesignSystem", "DI", "Reservations", "Places", "Favorites"], path: "Modules/Dining/Tests"),
+        .target(name: "Parking", dependencies: ["CoreKit", "CoreModels", "DesignSystem", "DI", "Identity", "Wallet", "Places", "Notifications"], path: "Modules/Parking", exclude: ["Tests"], sources: ["Sources"], resources: [.process("Resources")]),
+        .testTarget(name: "ParkingTests", dependencies: ["Parking", "CoreKit", "CoreModels", "DesignSystem", "DI", "Identity", "Wallet", "Places", "Notifications"], path: "Modules/Parking/Tests"),
+        .target(name: "Transit", dependencies: ["CoreKit", "CoreModels", "DesignSystem", "DI", "Identity", "Wallet", "Places", "Favorites"], path: "Modules/Transit", exclude: ["Tests"], sources: ["Sources"], resources: [.process("Resources")]),
+        .testTarget(name: "TransitTests", dependencies: ["Transit", "CoreKit", "CoreModels", "DesignSystem", "DI", "Identity", "Wallet", "Places", "Favorites"], path: "Modules/Transit/Tests"),
+        .target(name: "Library", dependencies: ["CoreKit", "CoreModels", "DesignSystem", "DI", "Identity", "Notifications", "Agenda", "Favorites", "Places"], path: "Modules/Library", exclude: ["Tests"], sources: ["Sources"], resources: [.process("Resources")]),
+        .testTarget(name: "LibraryTests", dependencies: ["Library", "CoreKit", "CoreModels", "DesignSystem", "DI", "Identity", "Notifications", "Agenda", "Favorites", "Places"], path: "Modules/Library/Tests"),
+        .target(name: "ReportIssue", dependencies: ["CoreKit", "CoreModels", "DesignSystem", "DI", "Identity", "Places", "Notifications"], path: "Modules/ReportIssue", exclude: ["Tests"], sources: ["Sources"], resources: [.process("Resources")]),
+        .testTarget(name: "ReportIssueTests", dependencies: ["ReportIssue", "CoreKit", "CoreModels", "DesignSystem", "DI", "Identity", "Places", "Notifications"], path: "Modules/ReportIssue/Tests"),
+        .target(name: "Search", dependencies: ["CoreKit", "CoreModels", "DesignSystem", "DI", "Events", "Dining", "Library", "Transit", "Places"], path: "Modules/Search/Sources"),
+        .testTarget(name: "SearchTests", dependencies: ["Search", "CoreKit", "CoreModels", "DesignSystem", "DI", "Events", "Dining", "Library", "Transit", "Places"], path: "Modules/Search/Tests"),
+        .target(name: "Home", dependencies: ["CoreKit", "CoreModels", "DesignSystem", "DI", "Identity", "Notifications", "Agenda", "Favorites", "Wallet", "Tickets", "Reservations", "Events", "Dining", "Parking", "Transit", "Library", "ReportIssue", "Search"], path: "Modules/Home/Sources"),
+        .testTarget(name: "HomeTests", dependencies: ["Home", "CoreKit", "CoreModels", "DesignSystem", "DI", "Identity", "Notifications", "Agenda", "Favorites", "Wallet", "Tickets", "Reservations", "Events", "Dining", "Parking", "Transit", "Library", "ReportIssue", "Search"], path: "Modules/Home/Tests"),
+    ]
+)
