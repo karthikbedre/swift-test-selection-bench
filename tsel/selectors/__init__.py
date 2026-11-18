@@ -1,6 +1,7 @@
 from .base import Selection, Selector
 from .package_graph import PackageGraph, RunAll
-from .planned import CompilerIndex, HashCache
+from .compiler_index import CompilerIndex
+from .planned import HashCache
 from .treesitter import TreeSitterSelector
 
 SELECTORS: dict[str, type[Selector]] = {

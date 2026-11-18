@@ -46,7 +46,7 @@ Each commit is compared with its first parent. Changed files are sorted into cla
    - Fallback to the package graph for: macro declarations and uses, any attribute that may generate code, custom operators and precedence groups, `@propertyWrapper`, `@resultBuilder`, `@dynamicMemberLookup`, `@dynamicCallable`, `@_exported`, changes under `#if`, top-level code and imports, line-sensitive files (`#line`, `#file`, `#function` and similar) for formatting-only edits, and parse errors that touch the changed declarations.
    - The answer is intersected with the package-graph answer.
    - A variant runs the same rules on SwiftParser, with and without its name lookup, to separate parser mistakes from the limits of syntax alone.
-5. **Compiler index.** Build the base revision with indexing on, look up the changed declarations' USRs in IndexStoreDB, map referring files to targets, apply the chain rule. Blind spots to record: compiler-synthesized conformances and code outside the built configuration.
+5. **Compiler index.** Build the base revision with indexing on, map the changed lines to declarations exactly as the Tree-sitter selector does, look up their USRs in IndexStoreDB (`tools/index-query`), follow references inside the changed module to the declarations that contain them, map referring files to targets, apply the chain rule and intersect with the package graph. Changes under `#if` and declarations the index does not hold fall back to the package graph. Blind spots are recorded, not patched: implicit calls with no recorded reference (trap T001, where the plain index lookup skips the failing test), compiler-synthesized conformances and code outside the built configuration.
 
 ## Safety oracles
 
