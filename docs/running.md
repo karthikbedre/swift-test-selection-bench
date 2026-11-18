@@ -36,7 +36,7 @@ tsel replay ../subjects/swift-nio --end b440f7bae8894b5ec42e0f1842fcd77483ab3984
 Needs a Swift toolchain on `PATH` (macOS with Xcode, or Linux) and `tools/index-query` built once; see [tools/index-query/README.md](../tools/index-query/README.md).
 
 ```bash
-INDEXSTORE_DB_BRANCH=release/6.0 swift build -c release --package-path tools/index-query
+scripts/build-index-query.sh
 tsel select ../subjects/swift-nio HEAD~1 HEAD --selector package-graph --selector compiler-index
 ```
 

@@ -36,17 +36,10 @@ pytest                   # the 3 tests that need the index tool are skipped unti
 
 ## 3. Build the index tool
 
-The indexstore-db branch must match your Swift version.
+The indexstore-db branch must match your Swift version. The script picks it (for Swift 6.4.2 that is `release/6.4.2`) and builds the tool.
 
 ```bash
-v=$(swift --version 2>&1 | sed -n 's/.*Swift version \([0-9]*\.[0-9]*\).*/\1/p' | head -1)
-if git ls-remote --exit-code https://github.com/swiftlang/indexstore-db "refs/heads/release/$v" >/dev/null; then
-  b=release/$v
-else
-  b=main
-fi
-echo "using indexstore-db $b"
-INDEXSTORE_DB_BRANCH=$b swift build -c release --package-path tools/index-query
+scripts/build-index-query.sh
 pytest                   # all tests should now pass, none skipped
 ```
 
