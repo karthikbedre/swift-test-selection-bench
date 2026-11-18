@@ -1,5 +1,5 @@
 {
-  "recorded_at": "2026-11-18T10:00:35Z",
+  "recorded_at": "2026-11-18T19:34:37Z",
   "model": "Mac18,5",
   "cpu": "Apple M6",
   "cores": 12,
@@ -10,5 +10,6 @@
   "swift": "swift-driver version: 1.168.6 Apple Swift version 6.4.2 (swiftlang-6.4.2.1.9 clang-2100.4.1.1)",
   "power": "Now drawing from 'AC Power'",
   "indexstore_db_branch": "release/6.4.2",
-  "harness_commit": "957f7cdaed2f0fc06fea83dbcc4174a2028530c6"
+  "dependency_pins": "",
+  "harness_commit": "2ff05f89062d032d5225922fc022c4be68ac8a1d"
 }
