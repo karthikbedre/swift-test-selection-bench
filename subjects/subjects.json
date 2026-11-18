@@ -1,0 +1,81 @@
+{
+  "_note": "end_commit pins were the default-branch heads on 2026-11-17. Replay takes the `count` first-parent commits ending there. Toolchain versions are filled in on the first oracle run.",
+  "subjects": [
+    {
+      "name": "swift-nio",
+      "url": "https://github.com/apple/swift-nio",
+      "end_commit": "b440f7bae8894b5ec42e0f1842fcd77483ab3984",
+      "count": 300,
+      "package_dirs": ["."],
+      "platforms": ["linux", "macos"],
+      "role": "deep graph with one central module (NIOCore): the shared-package case",
+      "toolchain": null
+    },
+    {
+      "name": "swift-syntax",
+      "url": "https://github.com/swiftlang/swift-syntax",
+      "end_commit": "721d33a2c7f14683a1d648d704f9ef2b1780d9b1",
+      "count": 300,
+      "package_dirs": ["."],
+      "platforms": ["linux", "macos"],
+      "role": "layered graph, no external dependencies, large generated sources",
+      "toolchain": null
+    },
+    {
+      "name": "swift-argument-parser",
+      "url": "https://github.com/apple/swift-argument-parser",
+      "end_commit": "d7b6cebecb27311771a3249275259edaccf61972",
+      "count": 300,
+      "package_dirs": ["."],
+      "platforms": ["linux", "macos"],
+      "role": "small and fast; property wrappers and snapshot fixtures exercise fallbacks and resource rules",
+      "toolchain": null
+    },
+    {
+      "name": "hummingbird",
+      "url": "https://github.com/hummingbird-project/hummingbird",
+      "end_commit": "5a550f27b0cf2407f3967ea9e5a3909b5be3fc94",
+      "count": 300,
+      "package_dirs": ["."],
+      "platforms": ["linux", "macos"],
+      "role": "mid-size framework with a chain of feature modules",
+      "toolchain": null
+    },
+    {
+      "name": "vapor",
+      "url": "https://github.com/vapor/vapor",
+      "end_commit": "e4a5b7050f5e9e5793be3ebdeb687eac92fd9965",
+      "count": 300,
+      "package_dirs": ["."],
+      "platforms": ["linux", "macos"],
+      "role": "few large test targets: where finer than target-level selection should pay off",
+      "toolchain": null
+    },
+    {
+      "name": "swift-composable-architecture",
+      "url": "https://github.com/pointfreeco/swift-composable-architecture",
+      "end_commit": "bf66bd83f3165fe4f5fdb9a6c99249276505723e",
+      "count": 300,
+      "package_dirs": ["."],
+      "platforms": ["macos"],
+      "role": "macro-heavy iOS architecture library: measures how often syntax must fall back",
+      "toolchain": null
+    },
+    {
+      "name": "sample-ios-app",
+      "url": null,
+      "end_commit": null,
+      "count": 200,
+      "package_dirs": [],
+      "platforms": ["macos"],
+      "role": "author's own open source sample app split into Swift packages: GraphQL, fixtures, Tuist hash caching",
+      "toolchain": null
+    }
+  ],
+  "alternates": [
+    {"name": "swift-openapi-generator", "url": "https://github.com/apple/swift-openapi-generator",
+     "end_commit": "fbf4512ebc69ccbca33aa3c5fa4393887e687b76", "why": "generated code and snapshot-style reference tests"},
+    {"name": "sourcekit-lsp", "url": "https://github.com/swiftlang/sourcekit-lsp",
+     "end_commit": "9eb7ea8c605948be8926fc9b5535a277dc7f0edf", "why": "13 test targets, but its manifest needs the toolchain loader and tests are slow"}
+  ]
+}
