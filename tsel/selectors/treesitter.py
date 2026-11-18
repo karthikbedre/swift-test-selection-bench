@@ -77,6 +77,9 @@ class TreeSitterSelector(Selector):
             rules.append(f"trivia-only:{f.path}")
             return set()
 
+        if f.status in ("M", "R") and not (f.old_lines or f.new_lines):
+            raise Fallback(f"no-diff-ranges:{f.path}")  # never guess: an unread diff selects like the graph
+
         names: set[str] = set()
         changed: list = []
         for facts, ranges in ((old, f.old_lines), (new, f.new_lines)):
@@ -164,6 +167,8 @@ class TreeSitterSelector(Selector):
                 tests |= self.graph_tests(graph, {origin})
                 continue
 
+            if names:
+                names = _propagate_within(names, facts_by_target[origin], protocols)
             names = _expand_conformers(names, conformances)
             if not names:
                 continue  # trivia-only edits: nothing can fail
@@ -194,6 +199,27 @@ def names_of_decl(d, protocols: set[str]) -> set[str]:
         if d.owner_kind == "protocol" or (d.owner_kind == "extension" and d.owner in protocols):
             names.add(d.owner)
             names.add(f"conformers-of:{d.owner}")
+    return names
+
+
+def _propagate_within(names: set[str], facts: list[FileFacts], protocols: set[str], limit: int = 50) -> set[str]:
+    """Inside the origin target, a declaration that uses a changed name has changed behaviour too.
+
+    Repeat until nothing new is added, so an internal helper's change reaches the public API that
+    dependents and tests actually spell.
+    """
+    names = set(names)
+    for _ in range(limit):
+        plain = {n for n in names if not n.startswith("conformers-of:")} | {
+            n.split(":", 1)[1] for n in names if n.startswith("conformers-of:")}
+        added = set()
+        for fx in facts:
+            for d in fx.decls:
+                if (d.uses - {d.name}) & plain:
+                    added |= names_of_decl(d, protocols) - names
+        if not added:
+            break
+        names |= added
     return names
 
 

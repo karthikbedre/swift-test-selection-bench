@@ -144,3 +144,30 @@ def test_tree_sitter_never_widens_the_graph(sample):
 ])
 def test_classify(path, cls):
     assert classify(path) == cls
+
+
+def test_internal_helper_change_reaches_dependents_through_its_callers(sample):
+    # Route displayName through an internal helper, then change only the helper's body.
+    (sample / "Sources/Models/Naming.swift").write_text(
+        'enum Naming {\n    static func suffix(_ id: Int) -> String {\n        "#\\(id)"\n    }\n}\n')
+    p = sample / "Sources/Models/Character.swift"
+    p.write_text(p.read_text().replace('"\\(name) #\\(id)"', '"\\(name) \\(Naming.suffix(id))"'))
+    _git(sample, "add", "-A")
+    _git(sample, "-c", "user.name=t", "-c", "user.email=t@example.invalid", "commit", "-q", "-m", "helper")
+    base, head = commit_edit(sample, "Sources/Models/Naming.swift", '"#\\(id)"', '"No. \\(id)"')
+    s = select(sample, base, head)
+    # Nobody outside Models spells `suffix`, but displayName uses it and CharacterFeature spells displayName.
+    assert s["tree-sitter"] == {"ModelsTests", "CharacterFeatureTests", "AppCoreTests"}
+
+
+def test_paths_with_spaces_keep_their_line_ranges(sample):
+    src = sample / "Sources/Models/Character.swift"
+    spaced = sample / "Sources/Models/Character Naming.swift"
+    spaced.write_text("extension Character {\n    public var shout: String { name.uppercased() }\n}\n")
+    _git(sample, "add", "-A")
+    _git(sample, "-c", "user.name=t", "-c", "user.email=t@example.invalid", "commit", "-q", "-m", "spaced")
+    base, head = commit_edit(sample, "Sources/Models/Character Naming.swift", "uppercased()", "lowercased()")
+    changes = read_changes(str(sample), base, head)
+    f = next(c for c in changes.files if c.path.endswith("Character Naming.swift"))
+    assert f.new_lines == [(2, 2)]
+    assert select(sample, base, head)["tree-sitter"] == {"ModelsTests"}

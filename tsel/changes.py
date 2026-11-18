@@ -79,7 +79,7 @@ def classify(path: str, test_dirs: tuple[str, ...] = ("Tests",)) -> FileClass:
 
 
 def _git(repo: str, *args: str) -> str:
-    return subprocess.run(["git", "-C", repo, *args], check=True,
+    return subprocess.run(["git", "-c", "core.quotePath=false", "-C", repo, *args], check=True,
                           capture_output=True, text=True).stdout
 
 
@@ -112,10 +112,10 @@ def read_changes(repo: str, base: str, head: str) -> ChangeSet:
             current, minus_path = None, None
         elif line.startswith("--- "):
             # git appends a tab after paths that contain spaces
-            minus_path = line[6:] if line.startswith("--- a/") else None
+            minus_path = line[6:].rstrip("\t") if line.startswith("--- a/") else None
         elif line.startswith("+++ "):
             if line.startswith("+++ b/"):
-                current = by_path.get(line[6:])
+                current = by_path.get(line[6:].rstrip("\t"))
             elif minus_path is not None:  # deleted file: key it by its old path
                 current = by_path.get(minus_path)
         elif line.startswith("@@") and current is not None:
