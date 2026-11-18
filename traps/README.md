@@ -4,7 +4,7 @@ Each trap is a small Swift package with one Swift construct that hides a depende
 
 | Id | Construct | Status |
 |---|---|---|
-| T001 | Protocol-extension default for a requirement called implicitly (`description` via string interpolation) | Done |
+| T001 | Protocol-extension default for a requirement called implicitly (`description` via string interpolation) | Done. Package graph and Tree-sitter select the failing test; the compiler index skips it (Swift 6.0.3, Linux) |
 | T002 | Synthesized `Codable` and a renamed `CodingKeys` case | Planned |
 | T003 | Synthesized `Equatable`/`Hashable` after adding a stored property used in a `Set` | Planned |
 | T004 | New overload that wins resolution at an existing call site in another module | Planned |
