@@ -28,12 +28,28 @@ def _run(cmd: list[str], cwd: str, timeout: int) -> tuple[int, float, str]:
         out, err = p.communicate(timeout=timeout)
         return p.returncode, time.perf_counter() - t0, out[-4000:] + err[-4000:]
     except subprocess.TimeoutExpired:
-        try:
-            os.killpg(p.pid, signal.SIGKILL)
-        except ProcessLookupError:
-            pass
+        # swift test's helper starts its own process group, so kill the whole tree, children first
+        for pid in reversed(_tree(p.pid)):
+            try:
+                os.kill(pid, signal.SIGKILL)
+            except ProcessLookupError:
+                pass
         p.communicate()
         return TIMEOUT, time.perf_counter() - t0, "timeout"
+
+
+def _tree(root: int) -> list[int]:
+    """`root` and every process below it, parents before children."""
+    out = subprocess.run(["ps", "-axo", "pid=,ppid="], capture_output=True, text=True).stdout.split()
+    children: dict[int, list[int]] = {}
+    for pid, ppid in zip(out[::2], out[1::2]):
+        children.setdefault(int(ppid), []).append(int(pid))
+    order, stack = [], [root]
+    while stack:
+        pid = stack.pop()
+        order.append(pid)
+        stack.extend(children.get(pid, []))
+    return order
 
 
 TIMEOUT = 124
