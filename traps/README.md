@@ -24,6 +24,7 @@ Each trap is a small Swift package with one Swift construct that hides a depende
 | T018 | `@dynamicMemberLookup` key path change | Planned |
 | T019 | Associated type default change | Planned |
 | T020 | Typealias retarget across modules | Planned |
+| T021 | Test runs a built executable as a process, with no package dependency on its target | Done. Every selector skips the failing test (Swift 6.4.2, macOS). Found in swift-argument-parser, where seeded bugs in `Examples/count-lines` and `Tools/generate-docc-reference` were caught only by tests that run those executables |
 
 `scripts/run-traps.py <out dir>` checks every trap (tests pass before the edit; the `must_select` tests fail after it and the `may_skip` ones still pass) and scores every selector on it.
 

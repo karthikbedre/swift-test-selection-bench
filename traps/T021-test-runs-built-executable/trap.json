@@ -1,0 +1,7 @@
+{
+  "id": "T021",
+  "construct": "test runs a built executable: GreetTests launches the greet product as a process, with no package dependency on its target",
+  "edit": {"file": "Sources/greet/main.swift", "find": "print(\"Hello, \\(name)!\")", "replace": "print(\"Hello, \\(name).\")"},
+  "must_select": ["GreetTests"],
+  "may_skip": ["WordsTests"]
+}
