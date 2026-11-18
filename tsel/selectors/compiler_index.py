@@ -97,6 +97,7 @@ class CompilerIndex(Selector):
         else:
             subprocess.run(["git", "-C", str(wt), "checkout", "--force", "--detach", changes.base],
                            check=True, capture_output=True)
+            subprocess.run(["git", "-C", str(wt), "clean", "-fdq"], check=True, capture_output=True)
         for pkg in graph.packages:
             r = subprocess.run(["swift", "build", "--build-tests", "--enable-index-store"],
                                cwd=str(wt / pkg.dir), capture_output=True, text=True)
