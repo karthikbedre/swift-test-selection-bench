@@ -3,8 +3,8 @@
 
     scripts/make-civitas.py ../subjects/civitas
 
-The base commit holds subjects/civitas/package plus a README, a CI workflow and a check script,
-so edits to files that are not build inputs have something to change. Each later commit applies one
+The base commit holds subjects/civitas/package, Bazel files for the same modules, a README, a CI workflow
+and a check script, so edits to files that are not build inputs have something to change. Each later commit applies one
 edit on top of the previous ones, so its diff against its parent is exactly that edit. Author, committer
 and dates are fixed, so the same catalogue gives the same commit hashes on every machine.
 
@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -166,6 +167,81 @@ def git(repo: Path, *args: str, date: str | None = None) -> str:
                           env=env).stdout.strip()
 
 
+MODULE_BAZEL = """module(name = "civitas")
+
+bazel_dep(name = "rules_swift", version = "4.3.0", repo_name = "build_bazel_rules_swift")
+bazel_dep(name = "apple_support", version = "2.12.0", repo_name = "build_bazel_apple_support")
+"""
+
+ACCESSOR = """// Bazel has no SwiftPM resource bundle, so find {name}'s resources in the runfiles tree.
+import Foundation
+
+extension Foundation.Bundle {{
+    static let module: Bundle = {{
+        let env = ProcessInfo.processInfo.environment
+        for root in [env["TEST_SRCDIR"], env["RUNFILES_DIR"]].compactMap({{ $0 }}) {{
+            for repo in ["_main", "civitas"] {{
+                if let bundle = Bundle(path: "\\(root)/\\(repo)/Modules/{name}/Resources") {{ return bundle }}
+            }}
+        }}
+        return Bundle.main
+    }}()
+}}
+"""
+
+LIBRARY = """load("@build_bazel_rules_swift//swift:swift.bzl", "swift_library", "swift_test")
+
+swift_library(
+    name = "{name}",
+    module_name = "{name}",
+    srcs = {srcs},{data}
+    visibility = ["//visibility:public"],
+    deps = [{deps}],
+)
+"""
+
+TEST = """
+swift_test(
+    name = "{name}",
+    srcs = glob(["Tests/**/*.swift"]),
+    deps = [{deps}],
+)
+"""
+
+
+def write_bazel(root: Path) -> None:
+    """MODULE.bazel, one BUILD.bazel per module (rules_swift, macOS), and a resource accessor per module
+    with resources, since Bazel has no SwiftPM `Bundle.module`. Accessors sit in bazel/, outside every
+    SwiftPM target, and each module's BUILD.bazel is excluded from its SwiftPM target."""
+    manifest = (root / "Package.swift").read_text()
+    libs, tests = {}, {}
+    for kind, name, deps in re.findall(r'\.(target|testTarget)\(name: "(\w+)", dependencies: \[([^\]]*)\]', manifest):
+        (libs if kind == "target" else tests)[name] = re.findall(r'"(\w+)"', deps)
+    resources = {n for n in libs if (root / "Modules" / n / "Resources").is_dir()}
+
+    (root / ".bazelversion").write_text("9.3.2\n")
+    (root / ".bazelrc").write_text("common --macos_minimum_os=14.0 --host_macos_minimum_os=14.0\n")
+    (root / "MODULE.bazel").write_text(MODULE_BAZEL)
+    (root / "BUILD.bazel").write_text("")
+    (root / "bazel").mkdir(exist_ok=True)
+    (root / "bazel" / "BUILD.bazel").write_text('exports_files(glob(["*.swift"]))\n')
+    for n in sorted(resources):
+        (root / "bazel" / f"{n}Bundle.swift").write_text(ACCESSOR.format(name=n))
+
+    def labels(deps: list[str]) -> str:
+        return ", ".join(f'"//Modules/{d}"' for d in deps)
+
+    for n, deps in libs.items():
+        res = n in resources
+        body = LIBRARY.format(
+            name=n, deps=labels(deps),
+            srcs='glob(["Sources/**/*.swift"])' + (f' + ["//bazel:{n}Bundle.swift"]' if res else ""),
+            data='\n    data = glob(["Resources/**"]),' if res else "")
+        if f"{n}Tests" in tests:
+            body += TEST.format(name=f"{n}Tests", deps=labels(tests[f"{n}Tests"]))
+        (root / "Modules" / n / "BUILD.bazel").write_text(body)
+
+
 def build(repo: Path) -> dict[str, str]:
     if repo.exists():
         shutil.rmtree(repo)
@@ -175,7 +251,8 @@ def build(repo: Path) -> dict[str, str]:
     (repo / ".github" / "workflows" / "ci.yml").write_text(CI)
     (repo / "scripts").mkdir()
     (repo / "scripts" / "check.sh").write_text(CHECK)
-    (repo / ".gitignore").write_text(".build/\n.swiftpm/\n")
+    (repo / ".gitignore").write_text(".build/\n.swiftpm/\nbazel-*\nMODULE.bazel.lock\n")
+    write_bazel(repo)
     git(repo, "init", "-q", "-b", "main")
     git(repo, "config", "core.fileMode", "false")
     git(repo, "add", "-A")

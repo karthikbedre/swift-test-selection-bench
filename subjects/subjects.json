@@ -64,7 +64,7 @@
     {
       "name": "civitas",
       "url": "local:scripts/make-civitas.py",
-      "end_commit": "7dd18559faa587b3254972ed82cd5f8d9eaa547d",
+      "end_commit": "7f25fc0307c08ba759423d03986776c8ac276a84",
       "count": 28,
       "package_dirs": ["."],
       "platforms": ["macos"],
