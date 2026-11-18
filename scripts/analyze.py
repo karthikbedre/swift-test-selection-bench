@@ -18,7 +18,8 @@ def failing(rev):
     return {t for t, e in o["targets"].items() if e["code"] != 0 and not e.get("flaky")}
 
 
-names = ["run-all", "package-graph", "tree-sitter", "compiler-index"]
+names = [n for n in ["run-all", "package-graph", "tree-sitter", "compiler-index", "interface-only", "hash-cache"]
+         if any(n in s["selections"] for s in sels)]
 stat = {n: defaultdict(float) for n in names}
 mut_rows = []
 zero = set()

@@ -15,7 +15,7 @@ from tsel.selectors import SELECTORS
 
 repo, end, count, out = sys.argv[1], sys.argv[2], int(sys.argv[3]), Path(sys.argv[4])
 out.mkdir(parents=True, exist_ok=True)
-names = ["run-all", "package-graph", "tree-sitter", "compiler-index"]
+names = ["run-all", "package-graph", "tree-sitter", "compiler-index", "interface-only"]
 insts = {n: SELECTORS[n]() for n in names}
 wt = str(out / "oracle-worktree")
 random.seed(7)
