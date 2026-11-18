@@ -24,7 +24,8 @@ from tsel.replay import manifests_at
 from tsel.selectors import SELECTORS
 from tsel.units import TargetUnits, select_units, target_units
 
-repo, src, out = sys.argv[1], Path(sys.argv[2]), Path(sys.argv[3])
+# absolute paths: git resolves a relative worktree path against the subject repository, not here
+repo, src, out = str(Path(sys.argv[1]).resolve()), Path(sys.argv[2]).resolve(), Path(sys.argv[3]).resolve()
 cap = int(sys.argv[4]) if len(sys.argv) > 4 else 0
 out.mkdir(parents=True, exist_ok=True)
 rows = [json.loads(l) for l in open(src / "selections.jsonl")]
