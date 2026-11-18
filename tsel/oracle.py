@@ -143,9 +143,10 @@ def run_oracle(repo: str, rev: str, out_path: str, package_dirs: list[str] | Non
                 again = [_run(cmd, str(wt / t.package_dir), min(timeout, TEST_TIMEOUT))[0] for _ in range(reruns)]
                 entry["flaky"] = any(c == 0 for c in again)
                 entry["log_tail"] = _tail(log)
-            xctest_none = "Executed 0 tests" in log or "Executed " not in log
-            swift_testing_none = "Test run with 0 tests" in log or "Test run with" not in log
-            if code == 0 and xctest_none and swift_testing_none:
+            # XCTest prints "Executed 0 tests" for empty wrapper suites even when tests ran, so count cases
+            xctest_ran = len(XCTEST_CASE.findall(log))
+            swift_testing_ran = max((int(n) for n in re.findall(r"Test run with (\d+) tests?", log)), default=0)
+            if code == 0 and xctest_ran == 0 and swift_testing_ran == 0:
                 entry["zero_tests"] = True   # a run of zero tests counts as a failure of the harness
             record["targets"][tid] = entry
         Path(out_path).parent.mkdir(parents=True, exist_ok=True)
