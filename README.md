@@ -100,7 +100,7 @@ tests/                    unit tests
 
 ## Status
 
-- Working: change reading, both package-graph loaders, run-all, package-graph, Tree-sitter and compiler-index selectors, replay, oracle runner, scoring, first trap, seeded bugs, a first full run on swift-argument-parser ([results](results/pilot-linux-swift6.0.3/swift-argument-parser/README.md)).
+- Working: change reading, both package-graph loaders, run-all, package-graph, Tree-sitter and compiler-index selectors, replay, oracle runner, scoring, first trap, seeded bugs, first full runs on swift-argument-parser ([results](results/pilot-linux-swift6.0.3/swift-argument-parser/README.md)) and swift-nio ([results](results/pilot-linux-swift6.0.3/swift-nio/README.md)).
 - Next: test-file level selection for subjects with few large test targets, SwiftParser variant of the syntax selector, mutation runs, the full trap set, hash-based caching on the sample app.
 
 Findings will be shared with the maintainers of each selector tool before publication.
