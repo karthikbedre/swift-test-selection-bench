@@ -1,0 +1,7 @@
+real commits / mutants: 100 {'killed': 19, 'survived': 20, 'no-build': 4}
+zero-test targets: []
+run-all         commits=100 share=1.00 empty=0 test_s=1841/1841 overhead_s=0 fallback_commits=0 real_missed=0 mutants_missed=0/19
+package-graph   commits=100 share=0.87 empty=10 test_s=1594/1841 overhead_s=1 fallback_commits=0 real_missed=0 mutants_missed=0/19
+tree-sitter     commits=100 share=0.87 empty=10 test_s=1594/1841 overhead_s=49 fallback_commits=8 real_missed=0 mutants_missed=0/19
+compiler-index  commits=100 share=0.85 empty=10 test_s=1545/1841 overhead_s=212 fallback_commits=7 real_missed=0 mutants_missed=0/19
+interface-only  commits=100 share=0.79 empty=12 test_s=1461/1841 overhead_s=2 fallback_commits=0 real_missed=0 mutants_missed=0/19
