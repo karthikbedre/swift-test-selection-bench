@@ -9,6 +9,8 @@ tests only when neither XCTest nor swift-testing reports running any.
 from __future__ import annotations
 
 import json
+import os
+import signal
 import subprocess
 import time
 from pathlib import Path
@@ -18,12 +20,26 @@ from .pins import apply_pins, pins
 
 
 def _run(cmd: list[str], cwd: str, timeout: int) -> tuple[int, float, str]:
+    """Run in its own process group, so a timeout also stops the test helpers swift test starts."""
     t0 = time.perf_counter()
+    p = subprocess.Popen(cmd, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
+                         start_new_session=True)
     try:
-        p = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True, timeout=timeout)
-        return p.returncode, time.perf_counter() - t0, p.stdout[-4000:] + p.stderr[-4000:]
+        out, err = p.communicate(timeout=timeout)
+        return p.returncode, time.perf_counter() - t0, out[-4000:] + err[-4000:]
     except subprocess.TimeoutExpired:
-        return 124, time.perf_counter() - t0, "timeout"
+        try:
+            os.killpg(p.pid, signal.SIGKILL)
+        except ProcessLookupError:
+            pass
+        p.communicate()
+        return TIMEOUT, time.perf_counter() - t0, "timeout"
+
+
+TIMEOUT = 124
+# A test target that runs longer than this is stopped and counted as failing. A seeded bug can make a
+# test wait forever (a server that never answers), and that is a catch, not a reason to wait an hour.
+TEST_TIMEOUT = int(os.environ.get("TSEL_TEST_TIMEOUT", "600"))
 
 
 def run_oracle(repo: str, rev: str, out_path: str, package_dirs: list[str] | None = None,
@@ -54,11 +70,14 @@ def run_oracle(repo: str, rev: str, out_path: str, package_dirs: list[str] | Non
         for tid in sorted(graph.test_targets()):
             t = graph.targets[tid]
             cmd = ["swift", "test", "--skip-build", "--filter", f"^{t.name}\\."]
-            code, secs, log = _run(cmd, str(wt / t.package_dir), timeout)
+            code, secs, log = _run(cmd, str(wt / t.package_dir), min(timeout, TEST_TIMEOUT))
             entry = {"code": code, "seconds": round(secs, 2), "flaky": False}
-            if code != 0:
+            if code == TIMEOUT:
+                entry["timeout"] = True   # a hang is not rerun: it would only hang again
+                entry["log_tail"] = log
+            elif code != 0:
                 # re-run before calling it a failure: flaky tests look like misses
-                again = [_run(cmd, str(wt / t.package_dir), timeout)[0] for _ in range(reruns)]
+                again = [_run(cmd, str(wt / t.package_dir), min(timeout, TEST_TIMEOUT))[0] for _ in range(reruns)]
                 entry["flaky"] = any(c == 0 for c in again)
                 entry["log_tail"] = log
             xctest_none = "Executed 0 tests" in log or "Executed " not in log
