@@ -10,13 +10,18 @@ from __future__ import annotations
 
 import json
 import os
+import re
+import shutil
 import signal
 import subprocess
+import tempfile
+import xml.etree.ElementTree as ET
 import time
 from pathlib import Path
 
 from .graph import load_graph
 from .pins import apply_pins, pins
+from .units import TOP_LEVEL
 
 
 def _run(cmd: list[str], cwd: str, timeout: int) -> tuple[int, float, str]:
@@ -26,7 +31,7 @@ def _run(cmd: list[str], cwd: str, timeout: int) -> tuple[int, float, str]:
                          start_new_session=True)
     try:
         out, err = p.communicate(timeout=timeout)
-        return p.returncode, time.perf_counter() - t0, out[-4000:] + err[-4000:]
+        return p.returncode, time.perf_counter() - t0, out + err
     except subprocess.TimeoutExpired:
         # swift test's helper starts its own process group, so kill the whole tree, children first
         for pid in reversed(_tree(p.pid)):
@@ -58,8 +63,43 @@ TIMEOUT = 124
 TEST_TIMEOUT = int(os.environ.get("TSEL_TEST_TIMEOUT", "600"))
 
 
+def _tail(log: str) -> str:
+    return log[-8000:]
+
+
+XCTEST_CASE = re.compile(r"Test Case '-\[(\w+)\.(\w+) (\w+)\]' (passed|failed|skipped) \((\d+\.\d+) seconds\)")
+
+
+def unit_results(target: str, log: str, xml_path: Path) -> dict[str, dict]:
+    """Per test class: tests run, tests failed, seconds. XCTest from console lines, swift-testing from XML."""
+    units: dict[str, dict] = {}
+
+    def add(unit: str, failed: bool, secs: float) -> None:
+        u = units.setdefault(unit, {"tests": 0, "failed": 0, "seconds": 0.0})
+        u["tests"] += 1
+        u["failed"] += 1 if failed else 0
+        u["seconds"] = round(u["seconds"] + secs, 4)
+
+    for m in XCTEST_CASE.finditer(log):
+        if m.group(1) == target:
+            add(m.group(2), m.group(4) == "failed", float(m.group(5)))
+    st = xml_path.with_name(xml_path.stem + "-swift-testing.xml")
+    if st.exists():
+        try:
+            root = ET.parse(st).getroot()
+        except ET.ParseError:
+            root = None
+        for case in (root.iter("testcase") if root is not None else []):
+            cls = case.get("classname", "")
+            rest = cls[len(target) + 1:] if cls.startswith(target + ".") else ""
+            unit = re.split(r"[./]", rest)[0] if rest else TOP_LEVEL
+            add(unit, case.find("failure") is not None or case.find("error") is not None,
+                float(case.get("time", "0") or 0))
+    return units
+
+
 def run_oracle(repo: str, rev: str, out_path: str, package_dirs: list[str] | None = None,
-               reruns: int = 2, timeout: int = 3600, worktree: str | None = None) -> dict:
+               reruns: int = 2, timeout: int = 3600, worktree: str | None = None, units: bool = False) -> dict:
     """Check out `rev` in a scratch worktree, build tests once, then run each test target alone.
 
     With `worktree`, that worktree is kept and reused, so consecutive revisions build incrementally.
@@ -82,20 +122,27 @@ def run_oracle(repo: str, rev: str, out_path: str, package_dirs: list[str] | Non
         for d in package_dirs:
             apply_pins(str(wt / d))
             code, secs, log = _run(["swift", "build", "--build-tests"], str(wt / d), timeout)
-            record["build"][d] = {"code": code, "seconds": round(secs, 2), "log_tail": log if code else ""}
+            record["build"][d] = {"code": code, "seconds": round(secs, 2), "log_tail": _tail(log) if code else ""}
         for tid in sorted(graph.test_targets()):
             t = graph.targets[tid]
             cmd = ["swift", "test", "--skip-build", "--filter", f"^{t.name}\\."]
-            code, secs, log = _run(cmd, str(wt / t.package_dir), min(timeout, TEST_TIMEOUT))
+            xml_dir = tempfile.mkdtemp(prefix="tsel-xunit-") if units else None
+            first = cmd + (["--xunit-output", str(Path(xml_dir) / "results.xml")] if units else [])
+            code, secs, log = _run(first, str(wt / t.package_dir), min(timeout, TEST_TIMEOUT))
+            unit_rows = unit_results(t.name, log, Path(xml_dir) / "results.xml") if units else None
+            if xml_dir:
+                shutil.rmtree(xml_dir, ignore_errors=True)
             entry = {"code": code, "seconds": round(secs, 2), "flaky": False}
+            if unit_rows is not None:
+                entry["units"] = unit_rows
             if code == TIMEOUT:
                 entry["timeout"] = True   # a hang is not rerun: it would only hang again
-                entry["log_tail"] = log
+                entry["log_tail"] = _tail(log)
             elif code != 0:
                 # re-run before calling it a failure: flaky tests look like misses
                 again = [_run(cmd, str(wt / t.package_dir), min(timeout, TEST_TIMEOUT))[0] for _ in range(reruns)]
                 entry["flaky"] = any(c == 0 for c in again)
-                entry["log_tail"] = log
+                entry["log_tail"] = _tail(log)
             xctest_none = "Executed 0 tests" in log or "Executed " not in log
             swift_testing_none = "Test run with 0 tests" in log or "Test run with" not in log
             if code == 0 and xctest_none and swift_testing_none:
