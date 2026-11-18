@@ -58,6 +58,31 @@ tsel select ../subjects/civitas HEAD~1 HEAD --selector hash-cache
 scripts/rebuild-study.py ../subjects/civitas <end commit> 28 results/macos/civitas-rebuild   # rebuild versus rerun per edit
 ```
 
+## Traps
+
+```bash
+scripts/run-traps.py results/macos/traps            # every trap: checks it, then scores every selector on it
+scripts/run-traps.py results/macos/traps T002 T003  # some traps only
+```
+
+## Report
+
+```bash
+scripts/report.py results/macos > results/macos/REPORT.md
+```
+
+One Markdown file: per-subject summary, why the graph ran everything (H5), the compiler index's cost (H4), the Civitas edit catalogue with the rebuild study (H1 to H3, H7, H8) and traps (H9).
+
+## After a harness fix
+
+Selection never needs the tests, so a fixed selector or manifest reader can be rerun over a finished run without repeating the oracle:
+
+```bash
+scripts/reselect.py ../subjects/swift-argument-parser results/macos/swift-argument-parser
+```
+
+The previous file is kept as `selections.jsonl.bak`.
+
 ## Still to do
 
 - Mutation runs with Muter (macOS) on the files each commit changed.
