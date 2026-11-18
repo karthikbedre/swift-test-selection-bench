@@ -1,0 +1,8 @@
+{
+  "id": "T001",
+  "construct": "protocol extension default for a requirement Swift calls implicitly (CustomStringConvertible.description via string interpolation)",
+  "edit": {"file": "Sources/Core/Formatter+Default.swift", "find": "\" | \"", "replace": "\", \""},
+  "must_select": ["BillingTests"],
+  "may_skip": ["ReportsTests"],
+  "naive_name_search_misses": true
+}
