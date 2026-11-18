@@ -1,4 +1,4 @@
-> Interim, 2026-11-18 07:17 PST. swift-nio is still running; vapor, swift-composable-architecture and swift-syntax are queued. Regenerate with `scripts/report.py results/macos`.
+> Interim, 2026-11-18 11:37 PST. Target-level runs done for Civitas, swift-argument-parser, hummingbird and swift-nio. The test-class pass is running; vapor, swift-composable-architecture and swift-syntax are deferred. Regenerate with `scripts/report.py results/macos`.
 
 # Results: macos
 
@@ -49,6 +49,20 @@ Apple M6, 16 GB, macOS 27.0 (26A425), Xcode 27.2 Build version 27B52, Swift 6.4.
 | index | 0.66 | 2929 of 4319 s | 588 s (2.0 s per commit) | 146 | 40 | 2 of 104 |
 | interface-only | 0.52 | 2369 of 4319 s | 8 s (0.0 s per commit) | 116 | 0 | 3 of 104 |
 
+### swift-nio
+
+Apple M6, 16 GB, macOS 27.0 (26A425), Xcode 27.2 Build version 27B52, Swift 6.4.2. Harness `d0309f43e7`.
+
+100 commits built and tested; 47 seeded bugs, 15 caught by at least one test.
+
+| Selector | Mean share of test targets | Test time selected | Deciding time | Selects everything | Falls back | Seeded bugs missed |
+|---|---|---|---|---|---|---|
+| all | 1.00 | 9827 of 9827 s | 0 s (0.0 s per commit) | 100 | 0 | 0 of 15 |
+| graph | 0.67 | 7456 of 9827 s | 2 s (0.0 s per commit) | 38 | 0 | 0 of 15 |
+| tree-sitter | 0.63 | 7062 of 9827 s | 344 s (3.4 s per commit) | 38 | 34 | 0 of 15 |
+| index | 0.61 | 6840 of 9827 s | 612 s (6.1 s per commit) | 38 | 25 | 0 of 15 |
+| interface-only | 0.54 | 6123 of 9827 s | 5 s (0.1 s per commit) | 38 | 0 | 0 of 15 |
+
 ## Commits where the package graph runs everything (H5)
 
 | Subject | Commits | Graph runs everything | Why |
@@ -56,6 +70,7 @@ Apple M6, 16 GB, macOS 27.0 (26A425), Xcode 27.2 Build version 27B52, Swift 6.4.
 | civitas | 28 | 3 (11%) | build_setting 1, unowned 1, manifest 1 |
 | hummingbird | 100 | 62 (62%) | build_setting 38, manifest 10, unowned 7, build_setting + unowned 4, manifest + unowned 2, build_setting + manifest + unowned 1 |
 | swift-argument-parser | 300 | 74 (25%) | build_setting 39, manifest 18, unowned 13, build_setting + manifest + unowned 2, build_setting + unowned 1, build_setting + manifest 1 |
+| swift-nio | 100 | 38 (38%) | unowned 13, build_setting 11, build_setting + unowned 6, manifest 4, build_setting + manifest 3, build_setting + manifest + unowned 1 |
 
 ## What the compiler index costs (H4)
 
@@ -66,6 +81,7 @@ Index build is the incremental indexed build of each base. Query is the rest of 
 | civitas | 28 | 157 s | 6 s | 171 s | 565 s | +402 s | +559 s |
 | hummingbird | 100 | 212 s | 67 s | 411 s | 295 s | +17 s | +229 s |
 | swift-argument-parser | 300 | 517 s | 70 s | 772 s | 1389 s | +802 s | +1319 s |
+| swift-nio | 100 | 529 s | 83 s | 655 s | 2987 s | +2374 s | +2903 s |
 
 ## Civitas edit catalogue (H1, H2, H2b, H3, H7, H8)
 
@@ -124,4 +140,5 @@ Mean share of the 17 test targets by edit kind:
 | T003 | synthesized Hashable | yes | caught, wide | caught | caught | caught, wide |
 | T004 | new overload | yes | caught, wide | caught | caught | caught, wide |
 | T013 | default argument value | yes | caught, wide | caught | caught | caught, wide |
+| T021 | test runs a built executable | yes | **missed** | **missed** | **missed** | **missed** |
 
