@@ -88,16 +88,19 @@ tsel/
   replay.py             selections over a commit range
   oracle.py             run every test target at a revision, re-run failures
   score.py              misses, selected share, time saved
+  mutate.py             seeded bugs on the lines a commit changed
 fixtures/sample-modular/  the worked example from docs/method.md
 traps/                    trap packages, one Swift trap each
 subjects/subjects.json    pinned subjects
 tools/index-query/        Swift tool on IndexStoreDB that the compiler-index selector calls
+scripts/                  study run (real commits plus seeded bugs) and its scoring
+results/                  published runs, one folder per subject
 tests/                    unit tests
 ```
 
 ## Status
 
-- Working: change reading, both package-graph loaders, run-all, package-graph, Tree-sitter and compiler-index selectors, replay, oracle runner, scoring, first trap.
+- Working: change reading, both package-graph loaders, run-all, package-graph, Tree-sitter and compiler-index selectors, replay, oracle runner, scoring, first trap, seeded bugs, a first full run on swift-argument-parser ([results](results/swift-argument-parser/README.md)).
 - Next: test-file level selection for subjects with few large test targets, SwiftParser variant of the syntax selector, mutation runs, the full trap set, hash-based caching on the sample app.
 
 Findings will be shared with the maintainers of each selector tool before publication.
