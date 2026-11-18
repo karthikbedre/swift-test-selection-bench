@@ -72,3 +72,14 @@ def test_target_without_evidence_is_kept_whole(tmp_path):
     hints = {"names": {"Money"}, "spellers": set(), "whole": set(), "test_files": set()}
     picked, whole = select_units("tree-sitter", {".::CoreTests"}, hints, graph, units_of)
     assert whole == {".::CoreTests"} and len(picked[".::CoreTests"]) == 3
+
+
+def test_nested_suite_is_its_outer_type(tmp_path):
+    repo, graph = make(tmp_path)
+    nested = "import Testing\n\nstruct UtilsTests {\n    struct FlatTests {\n        @Test func a() { #expect(true) }\n    }\n}\n"
+    (Path(repo) / "Tests/CoreTests/UtilsTests.swift").write_text(nested)
+    for args in (["add", "-A"], ["commit", "-qm", "nested"]):
+        subprocess.run(["git", "-C", repo, "-c", "user.name=t", "-c", "user.email=t@example.invalid", *args],
+                       check=True, capture_output=True)
+    tu = target_units(repo, "HEAD", graph, ".::CoreTests")
+    assert "UtilsTests" in tu.units and "FlatTests" not in tu.units

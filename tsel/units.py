@@ -49,7 +49,17 @@ def target_units(repo: str, rev: str, graph: Graph, tid: str) -> TargetUnits:
         facts = analyze(_show(repo, rev, path))
         tu.spelled[path] = set(facts.spelled)
         tu.declared[path] = {d.name for d in facts.decls}
-        test_owners = {d.owner for d in facts.decls if "Test" in d.attributes and d.owner}
+        # a nested suite belongs to its outermost type, which is how the oracle names it
+        parent = {d.name: d.owner for d in facts.decls if d.kind in TYPE_KINDS and d.owner}
+
+        def outermost(name: str) -> str:
+            seen = set()
+            while name in parent and name not in seen:
+                seen.add(name)
+                name = parent[name]
+            return name
+
+        test_owners = {outermost(d.owner) for d in facts.decls if "Test" in d.attributes and d.owner}
         found = False
         for d in facts.decls:
             top = d.owner is None
@@ -63,7 +73,7 @@ def target_units(repo: str, rev: str, graph: Graph, tid: str) -> TargetUnits:
         # members declared in an extension of a unit type defined in another file
         for d in facts.decls:
             if d.owner and "Test" in d.attributes:
-                tu.units.setdefault(d.owner, set()).add(path)
+                tu.units.setdefault(outermost(d.owner), set()).add(path)
                 found = True
         if not found:
             tu.helpers.add(path)

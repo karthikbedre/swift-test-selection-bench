@@ -47,11 +47,18 @@ def report(d: Path) -> list[str]:
     names = next(iter(sels.values()))["selections"].keys() if sels else []
     stat = {n: defaultdict(float) for n in names}
     commits = muts = 0
+    stat_unmatched = [0, 0]
     for head, r in sels.items():
         o = orc.get(head)
         if not o or any(b["code"] != 0 for b in o["build"].values()):
             continue
-        unit_secs = {(t, u): v["seconds"] for t, e in o["targets"].items() for u, v in e.get("units", {}).items()}
+        # classes the oracle reports but the source reader did not find are left out for every selector
+        known = {(t, u) for t, us in r["units_total"].items() for u in us}
+        reported = {(t, u) for t, e in o["targets"].items() for u in e.get("units", {})}
+        stat_unmatched[0] += len(reported - known)
+        stat_unmatched[1] += len(reported)
+        unit_secs = {(t, u): v["seconds"] for t, e in o["targets"].items() for u, v in e.get("units", {}).items()
+                     if (t, u) in known}
         all_units = set(unit_secs)
         if r["kind"] == "mutant":
             base = orc.get(r["of"])
@@ -78,7 +85,9 @@ def report(d: Path) -> list[str]:
             s["all_target_secs"] += sum(target_secs.values())
             s["selected_targets"] += len(sel["targets"])
             s["whole"] += len(sel["whole"])
-    out = [f"### {d.name}", "", f"{commits} commits and {muts} caught seeded bugs with per-class results.", "",
+    out = [f"### {d.name}", "", f"{commits} commits and {muts} caught seeded bugs with per-class results. "
+           f"{stat_unmatched[0]} of {stat_unmatched[1]} reported class results had no matching class in the source "
+           "and are left out.", "",
            "| Selector | Share of targets | Share of classes | Class test time selected | Targets kept whole | Seeded bugs missed |",
            "|---|---|---|---|---|---|"]
     for n in names:
