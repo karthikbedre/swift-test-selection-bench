@@ -62,6 +62,16 @@
       "toolchain": null
     },
     {
+      "name": "civitas",
+      "url": "local:scripts/make-civitas.py",
+      "end_commit": "7dd18559faa587b3254972ed82cd5f8d9eaa547d",
+      "count": 28,
+      "package_dirs": ["."],
+      "platforms": ["macos"],
+      "role": "controlled edit catalogue on a modular SwiftUI app (tree topology): one edit kind and module depth at a time",
+      "toolchain": null
+    },
+    {
       "name": "sample-ios-app",
       "url": null,
       "end_commit": null,

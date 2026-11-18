@@ -21,8 +21,13 @@ out="$here/results/${RUN_TAG:-macos}/$name"
 repo="$subjects_dir/$name"
 
 mkdir -p "$subjects_dir" "$out"
-[[ -d "$repo/.git" ]] || git clone --filter=blob:none "$url" "$repo"
-git -C "$repo" fetch -q origin "$end" || true
+if [[ "$url" == local:* ]]; then
+  # built on this machine from files in this repository, with reproducible commit hashes
+  [[ -d "$repo/.git" ]] || "$py" "$here/${url#local:}" "$repo"
+else
+  [[ -d "$repo/.git" ]] || git clone --filter=blob:none "$url" "$repo"
+  git -C "$repo" fetch -q origin "$end" || true
+fi
 git -C "$repo" cat-file -e "$end^{commit}"
 
 "$here/scripts/machine.sh" > "$out/machine.json"
