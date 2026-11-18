@@ -42,9 +42,27 @@ tsel select ../subjects/swift-nio HEAD~1 HEAD --selector package-graph --selecto
 
 The selector checks out the base revision in a scratch worktree (under `~/.cache/tsel`, or `$TSEL_CACHE`) and builds it with `swift build --build-tests --enable-index-store`. That build time is recorded as the selector's overhead. One worktree is kept per subject and moved to each base in turn, so during a replay each build is incremental from the previous commit. Delete the cache between subjects to save disk.
 
+## Civitas (planned)
+
+```bash
+scripts/make-civitas.py ../subjects/civitas      # builds the local repository with one commit per catalogue edit
+scripts/run-subject.sh civitas                   # same harness as the public subjects
+```
+
+## Bazel arm (planned)
+
+Needs `bazelisk` (`brew install bazelisk`); the Bazel version is pinned in each generated workspace's `.bazelversion`.
+
+```bash
+scripts/bazel-civitas.sh ../subjects/civitas     # writes MODULE.bazel and BUILD files for every module
+tsel select ../subjects/civitas HEAD~1 HEAD --selector hash-cache
+scripts/bazel-rebuild.py ../subjects/civitas results/macos/civitas   # rebuild versus rerun per edit, from the execution log
+```
+
 ## Still to do
 
 - Mutation runs with Muter (macOS) on the files each commit changed.
 - Hash-based caching through Tuist on the sample app.
+- iOS simulator runs through `xcodebuild`, for Civitas as an iOS app.
 
 Large result files stay out of git; publish summaries and CSVs.
