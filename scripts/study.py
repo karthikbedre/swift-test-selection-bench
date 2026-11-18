@@ -12,10 +12,13 @@ from tsel.mutate import candidates, make_mutant
 from tsel.oracle import run_oracle
 from tsel.replay import commits, manifests_at
 from tsel.selectors import SELECTORS
+from tsel.selectors.hash_cache import _has_bazel
 
 repo, end, count, out = sys.argv[1], sys.argv[2], int(sys.argv[3]), Path(sys.argv[4])
 out.mkdir(parents=True, exist_ok=True)
 names = ["run-all", "package-graph", "tree-sitter", "compiler-index", "interface-only"]
+if _has_bazel(repo, end):
+    names.append("hash-cache")
 insts = {n: SELECTORS[n]() for n in names}
 wt = str(out / "oracle-worktree")
 random.seed(7)

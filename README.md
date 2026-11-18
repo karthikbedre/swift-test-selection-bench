@@ -84,7 +84,7 @@ tsel/
   changes.py            diff base..head, changed line ranges, file classes
   graph.py, manifest.py package graph (toolchain or Tree-sitter manifest reader)
   swiftdecl.py          declarations, spelled names, conformances, risky constructs
-  selectors/            run-all, package-graph, tree-sitter, compiler-index, planned hash-cache
+  selectors/            run-all, package-graph, tree-sitter, compiler-index, interface-only, hash-cache (Bazel)
   replay.py             selections over a commit range
   oracle.py             run every test target at a revision, re-run failures
   score.py              misses, selected share, time saved

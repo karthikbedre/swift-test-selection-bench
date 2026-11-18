@@ -49,12 +49,11 @@ scripts/make-civitas.py ../subjects/civitas      # builds the local repository w
 scripts/run-subject.sh civitas                   # same harness as the public subjects
 ```
 
-## Bazel arm (planned)
+## Bazel arm
 
-Needs `bazelisk` (`brew install bazelisk`); the Bazel version is pinned in each generated workspace's `.bazelversion`.
+Needs `bazelisk` (`brew install bazelisk`) and the target-determinator binary for your platform from https://github.com/bazel-contrib/target-determinator/releases (v0.34.0 used here), saved as `~/.cache/tsel/bin/target-determinator` or named by `$TSEL_TARGET_DETERMINATOR`. The Bazel version is pinned by each subject's `.bazelversion`. The study runs the `hash-cache` selector on any subject with a `MODULE.bazel` at its end commit.
 
 ```bash
-scripts/bazel-civitas.sh ../subjects/civitas     # writes MODULE.bazel and BUILD files for every module
 tsel select ../subjects/civitas HEAD~1 HEAD --selector hash-cache
 scripts/bazel-rebuild.py ../subjects/civitas results/macos/civitas   # rebuild versus rerun per edit, from the execution log
 ```

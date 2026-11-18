@@ -2,7 +2,7 @@ from .base import Selection, Selector
 from .package_graph import PackageGraph, RunAll
 from .compiler_index import CompilerIndex
 from .interface_only import InterfaceOnly
-from .planned import HashCache
+from .hash_cache import HashCache
 from .treesitter import TreeSitterSelector
 
 SELECTORS: dict[str, type[Selector]] = {
