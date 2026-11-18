@@ -1,0 +1,7 @@
+{
+  "id": "T003",
+  "construct": "synthesized Hashable: a new stored property with a per-instance default joins equality, so equal values stop being equal",
+  "edit": {"file": "Sources/Core/Tag.swift", "find": "    public var name: String\n", "replace": "    public var name: String\n    public let id = UUID()\n"},
+  "must_select": ["CatalogTests"],
+  "may_skip": ["ShelfTests"]
+}

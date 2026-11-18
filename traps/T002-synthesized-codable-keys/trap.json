@@ -1,0 +1,7 @@
+{
+  "id": "T002",
+  "construct": "synthesized Codable: a renamed CodingKeys raw value changes what encode(to:) writes, with no call site spelling the key",
+  "edit": {"file": "Sources/Core/Settings.swift", "find": "case theme = \"theme\"", "replace": "case theme = \"colorTheme\""},
+  "must_select": ["StorageTests"],
+  "may_skip": ["LabelsTests"]
+}
