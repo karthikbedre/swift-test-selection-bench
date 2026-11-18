@@ -1,0 +1,7 @@
+real commits / mutants: 100 {'killed': 15, 'survived': 28, 'no-build': 4}
+zero-test targets: ['NIOBase64Tests', 'NIOConcurrencyHelpersTests', 'NIODataStructuresTests', 'NIOEmbeddedTests', 'NIOFSFoundationCompatTests', 'NIOFSIntegrationTests', 'NIOFSTests', 'NIOFoundationCompatTests', 'NIOSingletonsTests', 'NIOTLSTests', 'NIOTestUtilsTests', 'NIOTests', 'NIOWebSocketTests']
+run-all         commits=100 share=1.00 empty=0 test_s=9827/9827 overhead_s=0 fallback_commits=0 real_missed=0 mutants_missed=0/15
+package-graph   commits=100 share=0.67 empty=9 test_s=7456/9827 overhead_s=2 fallback_commits=0 real_missed=0 mutants_missed=0/15
+tree-sitter     commits=100 share=0.63 empty=14 test_s=7062/9827 overhead_s=344 fallback_commits=34 real_missed=0 mutants_missed=0/15
+compiler-index  commits=100 share=0.61 empty=14 test_s=6840/9827 overhead_s=546 fallback_commits=25 real_missed=0 mutants_missed=0/15
+interface-only  commits=100 share=0.54 empty=9 test_s=6123/9827 overhead_s=5 fallback_commits=0 real_missed=0 mutants_missed=0/15
