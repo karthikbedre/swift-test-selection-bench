@@ -42,7 +42,7 @@ tsel select ../subjects/swift-nio HEAD~1 HEAD --selector package-graph --selecto
 
 The selector checks out the base revision in a scratch worktree (under `~/.cache/tsel`, or `$TSEL_CACHE`) and builds it with `swift build --build-tests --enable-index-store`. That build time is recorded as the selector's overhead. One worktree is kept per subject and moved to each base in turn, so during a replay each build is incremental from the previous commit. Delete the cache between subjects to save disk.
 
-## Civitas (planned)
+## Civitas
 
 ```bash
 scripts/make-civitas.py ../subjects/civitas      # builds the local repository with one commit per catalogue edit
@@ -55,7 +55,7 @@ Needs `bazelisk` (`brew install bazelisk`) and the target-determinator binary fo
 
 ```bash
 tsel select ../subjects/civitas HEAD~1 HEAD --selector hash-cache
-scripts/bazel-rebuild.py ../subjects/civitas results/macos/civitas   # rebuild versus rerun per edit, from the execution log
+scripts/rebuild-study.py ../subjects/civitas <end commit> 28 results/macos/civitas-rebuild   # rebuild versus rerun per edit
 ```
 
 ## Still to do

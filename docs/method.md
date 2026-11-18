@@ -83,7 +83,7 @@ Part A, Bazel as the hash-based selector:
 
 1. **Civitas first.** BUILD files are generated from the same module list (`swift_library` and `swift_test` from `rules_swift`, macOS). Then swift-argument-parser through `rules_swift_package_manager`, recording every hand fix (expected around C targets, resources and plugins).
 2. **Selection.** `bazel-diff` hashes every target at base and head. Selected: test targets whose hash changed. Its time to decide is the overhead. `bazel query 'kind(".*_test", rdeps(//..., set(<changed files>)))'` is recorded as the file-to-target baseline.
-3. **Rebuild versus rerun (H3).** At head, with a disk cache primed at base, `bazel test //...` runs with an execution log. From it: which `SwiftCompile` actions ran (modules rebuilt) and which test actions ran rather than came from cache (tests rerun).
+3. **Rebuild versus rerun (H3).** `scripts/rebuild-study.py` replays the history in one kept worktree. At each commit `bazel test //...` runs with the build event log, which gives the modules that ran a `SwiftCompile` action and the test targets that ran rather than came from cache. `swift build --build-tests -v` then gives the modules SwiftPM recompiled. Bazel caches a test by its built binary, so it reports two numbers: the targets whose inputs changed (target-determinator, before building) and the tests that actually reran (after building, skipped when the linked binary is byte-identical).
 4. **Selector.** `tsel/selectors/hash_cache.py` (moved out of `planned.py`) produces the same `selections.jsonl` rows, so `analyze.py` scores it alongside the others.
 
 Part B, Bazel-native subjects: public Swift projects that build with `rules_swift` or `rules_apple`, have real test targets and history, and build on the study Mac.
