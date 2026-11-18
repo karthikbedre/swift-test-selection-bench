@@ -171,3 +171,19 @@ def test_paths_with_spaces_keep_their_line_ranges(sample):
     f = next(c for c in changes.files if c.path.endswith("Character Naming.swift"))
     assert f.new_lines == [(2, 2)]
     assert select(sample, base, head)["tree-sitter"] == {"ModelsTests"}
+
+
+def test_version_specific_manifest_wins(tmp_path):
+    """SwiftPM reads Package@swift-X.Y.swift when the toolchain is at least X.Y; the harness must too."""
+    from tsel.replay import manifest_path, manifests_at
+
+    repo = make_repo(tmp_path, ROOT / "fixtures" / "sample-modular")
+    text = (repo / "Package.swift").read_text()
+    (repo / "Package@swift-5.6.swift").write_text(text.replace("EpisodeFeatureTests", "OnlyInVersionedTests"))
+    (repo / "Package@swift-99.swift").write_text("// newer than any toolchain\n")
+    _git(repo, "-c", "user.name=t", "-c", "user.email=t@example.invalid", "add", "-A")
+    _git(repo, "-c", "user.name=t", "-c", "user.email=t@example.invalid", "commit", "-qm", "versioned")
+    head = _git(repo, "rev-parse", "HEAD")
+    assert manifest_path(str(repo), head, ".", version=(6, 4, 2)) == "Package@swift-5.6.swift"
+    assert manifest_path(str(repo), head, ".", version=(5, 5, 0)) == "Package.swift"
+    assert "OnlyInVersionedTests" in manifests_at(str(repo), head, ["."])["."]
