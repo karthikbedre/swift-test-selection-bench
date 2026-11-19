@@ -11,6 +11,7 @@ its data is missing.
 from __future__ import annotations
 
 import json
+import subprocess
 import sys
 from collections import Counter, defaultdict
 from pathlib import Path
@@ -225,6 +226,11 @@ def main() -> None:
     rows = traps(trap_rows)
     if rows:
         out += ["## Traps (H9)", "", *rows, ""]
+    classes = sorted(d for d in root.iterdir() if d.name.endswith("-classes") and (d / "units-selections.jsonl").exists())
+    if classes:
+        res = subprocess.run([sys.executable, str(Path(__file__).with_name("units-analyze.py")), *map(str, classes)],
+                             capture_output=True, text=True, check=True)
+        out += ["", res.stdout.replace("## Test-class pass", "## Test-class pass (H6)", 1)]
     print("\n".join(out))
 
 
