@@ -1,4 +1,4 @@
-> Interim, 2026-11-18 11:37 PST. Target-level runs done for Civitas, swift-argument-parser, hummingbird and swift-nio. The test-class pass is running; vapor, swift-composable-architecture and swift-syntax are deferred. Regenerate with `scripts/report.py results/macos`.
+> 2026-11-18 18:35 PST. Target-level runs: Civitas (28 edits), swift-argument-parser (300 commits), hummingbird (100), swift-nio (100). Test-class pass on the commits where the package graph narrowed. Rebuild study and traps. Vapor, swift-composable-architecture and swift-syntax are deferred. Regenerate with `scripts/report.py results/macos`.
 
 # Results: macos
 
@@ -141,4 +141,57 @@ Mean share of the 17 test targets by edit kind:
 | T004 | new overload | yes | caught, wide | caught | caught | caught, wide |
 | T013 | default argument value | yes | caught, wide | caught | caught | caught, wide |
 | T021 | test runs a built executable | yes | **missed** | **missed** | **missed** | **missed** |
+
+
+## Test-class pass (H6)
+
+### civitas-classes
+
+24 commits and 4 caught seeded bugs with per-class results. 0 of 1598 reported class results had no matching class in the source and are left out.
+
+| Selector | Share of targets | Share of classes | Class test time selected | Targets kept whole | Seeded bugs missed |
+|---|---|---|---|---|---|
+| all | 1.00 | 1.00 | 3.7 of 3.7 s | - | 0 of 4 |
+| graph | 0.70 | 0.73 | 2.9 of 3.7 s | - | 0 of 4 |
+| tree-sitter | 0.52 | 0.54 | 2.1 of 3.7 s | 1 of 213 | 0 of 4 |
+| index | 0.31 | 0.32 | 1.3 of 3.7 s | 46 of 127 | 0 of 4 |
+| interface-only | 0.22 | 0.23 | 0.9 of 3.7 s | - | 2 of 4 |
+| Bazel hash | 0.70 | 0.73 | 2.9 of 3.7 s | - | 0 of 4 |
+
+### hummingbird-classes
+
+28 commits and 17 caught seeded bugs with per-class results. 59 of 1708 reported class results had no matching class in the source and are left out.
+
+| Selector | Share of targets | Share of classes | Class test time selected | Targets kept whole | Seeded bugs missed |
+|---|---|---|---|---|---|
+| all | 1.00 | 1.00 | 4122.6 of 4122.6 s | - | 0 of 17 |
+| graph | 0.89 | 0.92 | 3905.8 of 4122.6 s | - | 0 of 17 |
+| tree-sitter | 0.89 | 0.88 | 3652.2 of 4122.6 s | 0 of 100 | 0 of 17 |
+| index | 0.85 | 0.79 | 3366.1 of 4122.6 s | 0 of 95 | 0 of 17 |
+| interface-only | 0.62 | 0.71 | 3222.8 of 4122.6 s | - | 0 of 17 |
+
+### swift-argument-parser-classes
+
+60 commits and 40 caught seeded bugs with per-class results. 0 of 5477 reported class results had no matching class in the source and are left out.
+
+| Selector | Share of targets | Share of classes | Class test time selected | Targets kept whole | Seeded bugs missed |
+|---|---|---|---|---|---|
+| all | 1.00 | 1.00 | 629.8 of 629.8 s | - | 0 of 40 |
+| graph | 0.85 | 0.90 | 526.8 of 629.8 s | - | 0 of 40 |
+| tree-sitter | 0.78 | 0.81 | 429.7 of 629.8 s | 22 of 265 | 0 of 40 |
+| index | 0.73 | 0.66 | 384.9 of 629.8 s | 66 of 248 | 0 of 40 |
+| interface-only | 0.48 | 0.56 | 301.0 of 629.8 s | - | 1 of 40 |
+
+### swift-nio-classes
+
+52 commits and 6 caught seeded bugs with per-class results. 540 of 12461 reported class results had no matching class in the source and are left out.
+
+| Selector | Share of targets | Share of classes | Class test time selected | Targets kept whole | Seeded bugs missed |
+|---|---|---|---|---|---|
+| all | 1.00 | 1.00 | 2462.9 of 2462.9 s | - | 0 of 6 |
+| graph | 0.54 | 0.73 | 1908.4 of 2462.9 s | - | 0 of 6 |
+| tree-sitter | 0.46 | 0.62 | 1613.8 of 2462.9 s | 0 of 386 | 0 of 6 |
+| index | 0.45 | 0.57 | 1553.2 of 2462.9 s | 7 of 371 | 0 of 6 |
+| interface-only | 0.28 | 0.39 | 1074.8 of 2462.9 s | - | 0 of 6 |
+
 
