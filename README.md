@@ -16,7 +16,7 @@ It compares five ways of deciding on the same real commits, and publishes the se
 | Hash-based caching | A changed fingerprint of a test target's inputs (Tuist, Bazel) | Low where the build already uses them | Planned (macOS, supported subjects only) |
 | Package graph | Test targets that depend on the targets owning the changed files | Low | Done |
 | Tree-sitter syntax selector | Changed names that dependent code spells, bounded by the package graph | Moderate; no build, no Swift toolchain | First version done |
-| Compiler index | Symbol references recorded by the compiler during an indexed build | High; full build with indexing | Planned (macOS) |
+| Compiler index | Symbol references recorded by the compiler during an indexed build | High; full build with indexing | First version done (macOS and Linux) |
 
 Three words carry the evaluation:
 
@@ -73,7 +73,7 @@ tsel oracle ../swift-nio <commit> --out results/swift-nio/oracle.jsonl
 tsel score results/swift-nio/selections.jsonl results/swift-nio/oracle.jsonl --csv results/swift-nio/scores.csv
 ```
 
-Full steps, including what still needs a Mac: [docs/running.md](docs/running.md).
+Full steps: [docs/running.md](docs/running.md). Final runs on a Mac: [docs/mac-mini.md](docs/mac-mini.md).
 
 When `swift` is on `PATH`, the package graph comes from `swift package dump-package`. Without it, a Tree-sitter reader of `Package.swift` is used and results are marked approximate.
 
@@ -84,20 +84,24 @@ tsel/
   changes.py            diff base..head, changed line ranges, file classes
   graph.py, manifest.py package graph (toolchain or Tree-sitter manifest reader)
   swiftdecl.py          declarations, spelled names, conformances, risky constructs
-  selectors/            run-all, package-graph, tree-sitter, planned compiler-index and hash-cache
+  selectors/            run-all, package-graph, tree-sitter, compiler-index, planned hash-cache
   replay.py             selections over a commit range
   oracle.py             run every test target at a revision, re-run failures
   score.py              misses, selected share, time saved
+  mutate.py             seeded bugs on the lines a commit changed
 fixtures/sample-modular/  the worked example from docs/method.md
 traps/                    trap packages, one Swift trap each
 subjects/subjects.json    pinned subjects
+tools/index-query/        Swift tool on IndexStoreDB that the compiler-index selector calls
+scripts/                  study run (real commits plus seeded bugs) and its scoring
+results/                  published runs, one folder per subject
 tests/                    unit tests
 ```
 
 ## Status
 
-- Working: change reading, both package-graph loaders, run-all, package-graph and Tree-sitter selectors, replay, oracle runner, scoring, first trap.
-- Next: compiler-index selector (IndexStoreDB helper), test-file level selection for subjects with few large test targets, SwiftParser variant of the syntax selector, mutation runs, the full trap set, hash-based caching on the sample app.
+- Working: change reading, both package-graph loaders, run-all, package-graph, Tree-sitter and compiler-index selectors, replay, oracle runner, scoring, first trap, seeded bugs, first full runs on swift-argument-parser ([results](results/pilot-linux-swift6.0.3/swift-argument-parser/README.md)) and swift-nio ([results](results/pilot-linux-swift6.0.3/swift-nio/README.md)).
+- Next: test-file level selection for subjects with few large test targets, SwiftParser variant of the syntax selector, mutation runs, the full trap set, hash-based caching on the sample app.
 
 Findings will be shared with the maintainers of each selector tool before publication.
 

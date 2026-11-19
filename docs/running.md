@@ -1,5 +1,7 @@
 # Running the study
 
+For the final runs on a Mac, follow [mac-mini.md](mac-mini.md) step by step.
+
 ## Selection only (any machine)
 
 ```bash
@@ -29,10 +31,20 @@ tsel replay ../subjects/swift-nio --end b440f7bae8894b5ec42e0f1842fcd77483ab3984
    tsel score results/swift-nio/selections.jsonl results/swift-nio/oracle.jsonl --csv results/swift-nio/scores.csv
    ```
 
-## Still to build on the Mac
+## Compiler-index selector
 
-- `tools/index-query`: a small Swift command line tool on IndexStoreDB that, given an index store and a list of changed declarations, prints the files that reference them. The compiler-index selector calls it.
-- Mutation runs with Muter on the files each commit changed.
-- Linux containers: `swift:<version>` images for the Linux-capable subjects.
+Needs a Swift toolchain on `PATH` (macOS with Xcode, or Linux) and `tools/index-query` built once; see [tools/index-query/README.md](../tools/index-query/README.md).
+
+```bash
+INDEXSTORE_DB_BRANCH=release/6.0 swift build -c release --package-path tools/index-query
+tsel select ../subjects/swift-nio HEAD~1 HEAD --selector package-graph --selector compiler-index
+```
+
+The selector checks out the base revision in a scratch worktree (under `~/.cache/tsel`, or `$TSEL_CACHE`) and builds it with `swift build --build-tests --enable-index-store`. That build time is recorded as the selector's overhead. One worktree is kept per subject and moved to each base in turn, so during a replay each build is incremental from the previous commit. Delete the cache between subjects to save disk.
+
+## Still to do
+
+- Mutation runs with Muter (macOS) on the files each commit changed.
+- Hash-based caching through Tuist on the sample app.
 
 Large result files stay out of git; publish summaries and CSVs.

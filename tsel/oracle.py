@@ -3,8 +3,8 @@
 Run once per commit; every selector is then scored offline against the same record, so a
 selector's misses and its time saved come from one set of test runs.
 
-Needs the subject's Swift toolchain (Linux container or macOS). Not exercised in this repo's
-own unit tests, which run without a toolchain.
+Needs the subject's Swift toolchain (Linux container or macOS). A target counts as running zero
+tests only when neither XCTest nor swift-testing reports running any.
 """
 from __future__ import annotations
 
@@ -26,12 +26,21 @@ def _run(cmd: list[str], cwd: str, timeout: int) -> tuple[int, float, str]:
 
 
 def run_oracle(repo: str, rev: str, out_path: str, package_dirs: list[str] | None = None,
-               reruns: int = 2, timeout: int = 3600) -> dict:
-    """Check out `rev` in a scratch worktree, build tests once, then run each test target alone."""
+               reruns: int = 2, timeout: int = 3600, worktree: str | None = None) -> dict:
+    """Check out `rev` in a scratch worktree, build tests once, then run each test target alone.
+
+    With `worktree`, that worktree is kept and reused, so consecutive revisions build incrementally.
+    """
     package_dirs = package_dirs or ["."]
-    wt = Path(repo).resolve().parent / f".tsel-worktree-{rev[:12]}"
-    subprocess.run(["git", "-C", repo, "worktree", "add", "--force", "--detach", str(wt), rev],
-                   check=True, capture_output=True)
+    keep = worktree is not None
+    wt = Path(worktree) if keep else Path(repo).resolve().parent / f".tsel-worktree-{rev[:12]}"
+    if keep and wt.exists():
+        subprocess.run(["git", "-C", str(wt), "checkout", "--force", "--detach", rev], check=True, capture_output=True)
+        # files a test run wrote (snapshots, records) must not leak into the next revision; keep .build
+        subprocess.run(["git", "-C", str(wt), "clean", "-fdq"], check=True, capture_output=True)
+    else:
+        subprocess.run(["git", "-C", repo, "worktree", "add", "--force", "--detach", str(wt), rev],
+                       check=True, capture_output=True)
     try:
         graph = load_graph(str(wt), package_dirs)
         record: dict = {"rev": rev, "build": {}, "targets": {}}
@@ -48,7 +57,9 @@ def run_oracle(repo: str, rev: str, out_path: str, package_dirs: list[str] | Non
                 again = [_run(cmd, str(wt / t.package_dir), timeout)[0] for _ in range(reruns)]
                 entry["flaky"] = any(c == 0 for c in again)
                 entry["log_tail"] = log
-            if "Executed 0 tests" in log or "0 tests in 0 suites" in log:
+            xctest_none = "Executed 0 tests" in log or "Executed " not in log
+            swift_testing_none = "Test run with 0 tests" in log or "Test run with" not in log
+            if code == 0 and xctest_none and swift_testing_none:
                 entry["zero_tests"] = True   # a run of zero tests counts as a failure of the harness
             record["targets"][tid] = entry
         Path(out_path).parent.mkdir(parents=True, exist_ok=True)
@@ -56,4 +67,5 @@ def run_oracle(repo: str, rev: str, out_path: str, package_dirs: list[str] | Non
             fh.write(json.dumps(record) + "\n")
         return record
     finally:
-        subprocess.run(["git", "-C", repo, "worktree", "remove", "--force", str(wt)], capture_output=True)
+        if not keep:
+            subprocess.run(["git", "-C", repo, "worktree", "remove", "--force", str(wt)], capture_output=True)
