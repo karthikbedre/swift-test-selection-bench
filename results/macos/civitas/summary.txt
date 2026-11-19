@@ -1,0 +1,10 @@
+real commits / mutants: 28 {'killed': 4, 'survived': 6, 'no-build': 0}
+zero-test targets: []
+run-all         commits=28 share=1.00 empty=0 test_s=906/906 overhead_s=0 fallback_commits=0 real_missed=0 mutants_missed=0/4
+package-graph   commits=28 share=0.71 empty=1 test_s=644/906 overhead_s=0 fallback_commits=0 real_missed=0 mutants_missed=0/4
+tree-sitter     commits=28 share=0.55 empty=5 test_s=505/906 overhead_s=39 fallback_commits=2 real_missed=0 mutants_missed=0/4
+compiler-index  commits=28 share=0.37 empty=6 test_s=340/906 overhead_s=157 fallback_commits=2 real_missed=0 mutants_missed=0/4
+interface-only  commits=28 share=0.30 empty=7 test_s=267/906 overhead_s=0 fallback_commits=0 real_missed=0 mutants_missed=2/4
+    missed: lt-to-le Modules/CoreModels/Sources/Money.swift:27 killers=['WalletTests']
+    missed: gt-to-ge Modules/CoreModels/Sources/Money.swift:45 killers=['WalletTests']
+hash-cache      commits=28 share=0.60 empty=4 test_s=549/906 overhead_s=103 fallback_commits=0 real_missed=0 mutants_missed=0/4

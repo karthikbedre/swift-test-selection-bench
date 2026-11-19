@@ -1,0 +1,231 @@
+{
+ "head": "7f25fc0307c08ba759423d03986776c8ac276a84",
+ "commits": {
+  "3f30df580b20d7052e2690fa708870c97f2803aa": "c1",
+  "11cbff40846b796d6a9a821043c3fbf52a3ab9f4": "c2",
+  "d944e5cc477a3c3fe6f0196a1309d1e8809d8e15": "c3",
+  "80754859b93bcb56bed802b31ba05620dc36e70f": "c4",
+  "418c94c15fba4a62c3008c39a3a86998cf01703c": "c5",
+  "3bae9c20dcb658760dafe4c4436bb77648b73ba0": "c6",
+  "92f5e8e8f31dd5d0ade594dd9e5811011e631946": "c7",
+  "54d8fa49fb6e29897260b06a1e524da03db5fb65": "c8",
+  "d85acf422bada95fdc8674d9f4e50c30b0d6fd23": "i1",
+  "3f579d60c77be82e090dd75ec01623cfdf8582fa": "i2",
+  "9c60d5ad88dda40499c094a3ffd4d118d9ac89e4": "i3",
+  "2c51773a72160df9d2a1a05f440402fa90e32337": "i4",
+  "9a3475a77c0627b885a632c9114f73c58ae4f581": "i5",
+  "e4b3183ef47e69e5d69a3e652e572cf7bef6fc93": "i6",
+  "9969cee670949646b844ac93d2ff5f5bb02ecfe5": "i7",
+  "e1bad3500fa689f5e5d00d658b09d552a43a4694": "i8",
+  "cf3a21b3dd83ca0edd7de18dc710d1c4d45a78f7": "i9",
+  "012fcc3940fd6a2ca53d0c27d470f2eb1b7d6b23": "w1",
+  "36397c879eda0d96dc1950b88f304a7451b0d724": "w2",
+  "f1b0edffef19c9a0b434bedf3f88f1765369cf2a": "w3",
+  "2a70831cf61ed8ceff3579b2170695a7154522f1": "w4",
+  "10ac013d2d46293e1457af29a21b18f5df8ca67d": "w5",
+  "04b4034d5acdb98499e0c279cd556f79561520a1": "h1",
+  "b7f61b3f32e84b06f462fcd35954230163982145": "h2",
+  "7442f188625de67cd10ec7f23a87d4ee607e408e": "n1",
+  "079cb9c7f723628e0411e0c0f85ed922bfe89d70": "n2",
+  "956234b8f1416d50a6cc8410f7395b6fd131588a": "n3",
+  "7f25fc0307c08ba759423d03986776c8ac276a84": "n4"
+ },
+ "edits": [
+  {
+   "id": "c1",
+   "kind": "public-body",
+   "module": "CoreModels",
+   "depth": "core",
+   "path": "Modules/CoreModels/Sources/Money.swift"
+  },
+  {
+   "id": "c2",
+   "kind": "public-body-operator",
+   "module": "CoreModels",
+   "depth": "core",
+   "path": "Modules/CoreModels/Sources/Money.swift"
+  },
+  {
+   "id": "c3",
+   "kind": "private-decl",
+   "module": "CoreModels",
+   "depth": "core",
+   "path": "Modules/CoreModels/Sources/Money.swift"
+  },
+  {
+   "id": "c4",
+   "kind": "private-body",
+   "module": "CoreModels",
+   "depth": "core",
+   "path": "Modules/CoreModels/Sources/Money.swift"
+  },
+  {
+   "id": "c5",
+   "kind": "public-decl",
+   "module": "CoreModels",
+   "depth": "core",
+   "path": "Modules/CoreModels/Sources/Money.swift"
+  },
+  {
+   "id": "c6",
+   "kind": "public-signature",
+   "module": "CoreModels",
+   "depth": "core",
+   "path": "Modules/CoreModels/Sources/Money.swift"
+  },
+  {
+   "id": "c7",
+   "kind": "comment-in-body",
+   "module": "CoreModels",
+   "depth": "core",
+   "path": "Modules/CoreModels/Sources/Money.swift"
+  },
+  {
+   "id": "c8",
+   "kind": "doc-comment",
+   "module": "CoreModels",
+   "depth": "core",
+   "path": "Modules/CoreModels/Sources/Money.swift"
+  },
+  {
+   "id": "i1",
+   "kind": "private-body",
+   "module": "Identity",
+   "depth": "hub",
+   "path": "Modules/Identity/Sources/Impl/Domain/ProfileValidator.swift"
+  },
+  {
+   "id": "i2",
+   "kind": "internal-body",
+   "module": "Identity",
+   "depth": "hub",
+   "path": "Modules/Identity/Sources/Impl/Domain/ProfileValidator.swift"
+  },
+  {
+   "id": "i3",
+   "kind": "public-body",
+   "module": "Identity",
+   "depth": "hub",
+   "path": "Modules/Identity/Sources/API/UserProfile.swift"
+  },
+  {
+   "id": "i4",
+   "kind": "private-decl",
+   "module": "Identity",
+   "depth": "hub",
+   "path": "Modules/Identity/Sources/Impl/Domain/ProfileValidator.swift"
+  },
+  {
+   "id": "i5",
+   "kind": "public-decl",
+   "module": "Identity",
+   "depth": "hub",
+   "path": "Modules/Identity/Sources/API/UserProfile.swift"
+  },
+  {
+   "id": "i6",
+   "kind": "public-signature",
+   "module": "Identity",
+   "depth": "hub",
+   "path": "Modules/Identity/Sources/API/IdentityService.swift"
+  },
+  {
+   "id": "i7",
+   "kind": "comment-in-body",
+   "module": "Identity",
+   "depth": "hub",
+   "path": "Modules/Identity/Sources/Impl/Domain/ProfileValidator.swift"
+  },
+  {
+   "id": "i8",
+   "kind": "resource",
+   "module": "Identity",
+   "depth": "hub",
+   "path": "Modules/Identity/Resources/identity.json"
+  },
+  {
+   "id": "i9",
+   "kind": "test-only",
+   "module": "Identity",
+   "depth": "hub",
+   "path": "Modules/Identity/Tests/BundleFixtureTests.swift"
+  },
+  {
+   "id": "w1",
+   "kind": "public-body",
+   "module": "Wallet",
+   "depth": "middle",
+   "path": "Modules/Wallet/Sources/Impl/Domain/LiveWalletService.swift"
+  },
+  {
+   "id": "w2",
+   "kind": "public-body-preview",
+   "module": "Wallet",
+   "depth": "middle",
+   "path": "Modules/Wallet/Sources/API/PreviewWalletService.swift"
+  },
+  {
+   "id": "w3",
+   "kind": "private-decl",
+   "module": "Wallet",
+   "depth": "middle",
+   "path": "Modules/Wallet/Sources/Impl/Domain/LiveWalletService.swift"
+  },
+  {
+   "id": "w4",
+   "kind": "private-body",
+   "module": "Wallet",
+   "depth": "middle",
+   "path": "Modules/Wallet/Sources/Impl/Domain/LiveWalletService.swift"
+  },
+  {
+   "id": "w5",
+   "kind": "comment-in-body",
+   "module": "Wallet",
+   "depth": "middle",
+   "path": "Modules/Wallet/Sources/Impl/Domain/LiveWalletService.swift"
+  },
+  {
+   "id": "h1",
+   "kind": "private-body",
+   "module": "Home",
+   "depth": "leaf",
+   "path": "Modules/Home/Sources/Impl/Domain/LiveHomeService.swift"
+  },
+  {
+   "id": "h2",
+   "kind": "public-decl",
+   "module": "Home",
+   "depth": "leaf",
+   "path": "Modules/Home/Sources/API/HomeModels.swift"
+  },
+  {
+   "id": "n1",
+   "kind": "ci-workflow",
+   "module": "-",
+   "depth": "none",
+   "path": ".github/workflows/ci.yml"
+  },
+  {
+   "id": "n2",
+   "kind": "script",
+   "module": "-",
+   "depth": "none",
+   "path": "scripts/check.sh"
+  },
+  {
+   "id": "n3",
+   "kind": "docs",
+   "module": "-",
+   "depth": "none",
+   "path": "README.md"
+  },
+  {
+   "id": "n4",
+   "kind": "manifest-comment",
+   "module": "-",
+   "depth": "none",
+   "path": "Package.swift"
+  }
+ ]
+}
