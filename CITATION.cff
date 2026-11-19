@@ -7,7 +7,9 @@ authors:
     given-names: Karthik
     orcid: "https://orcid.org/0009-0009-1576-3223"
 repository-code: "https://github.com/karthikbedre/swift-test-selection-bench"
-license: MIT
+license:
+  - MIT
+  - CC-BY-4.0
 date-released: 2026-11-18
 keywords:
   - regression test selection

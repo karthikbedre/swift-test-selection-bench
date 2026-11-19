@@ -143,4 +143,7 @@ Findings are shared with the maintainers of each selector tool before publicatio
 
 ## License
 
-MIT. See [LICENSE](LICENSE).
+- **Code** (`tsel/`, `scripts/`, `tools/`, `tests/`, `traps/`, `fixtures/`, `subjects/`): MIT, see [LICENSE](LICENSE). The Civitas sources in `subjects/civitas` come from [ios-modularization-benchmark](https://github.com/karthikbedre/ios-modularization-benchmark), also MIT.
+- **Results and documentation** (`results/`, `docs/`): Creative Commons Attribution 4.0 International (CC BY 4.0), see [results/LICENSE](results/LICENSE) and [docs/LICENSE](docs/LICENSE). You may reuse and adapt them with credit.
+
+The subject repositories (swift-argument-parser, swift-nio, Hummingbird) are not included. The harness clones them at their pinned commits, under their own licenses.
