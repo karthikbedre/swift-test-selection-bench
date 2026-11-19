@@ -34,6 +34,7 @@ from pathlib import Path
 
 from ..changes import ChangeSet, FileChange
 from ..graph import Graph
+from ..oracle import build_with_retry
 from ..pins import apply_pins
 from ..swiftdecl import innermost
 from .base import Selection, Selector, route
@@ -105,10 +106,9 @@ class CompilerIndex(Selector):
         pinning = 0.0
         for pkg in graph.packages:
             pinning += apply_pins(str(wt / pkg.dir))
-            r = subprocess.run(["swift", "build", "--build-tests", "--enable-index-store"],
-                               cwd=str(wt / pkg.dir), capture_output=True, text=True)
-            if r.returncode != 0:
-                raise IndexUnavailable(f"index build failed in {pkg.dir}: {r.stderr[-300:]}")
+            code, _, log = build_with_retry(["swift", "build", "--build-tests", "--enable-index-store"], str(wt / pkg.dir))
+            if code != 0:
+                raise IndexUnavailable(f"index build failed in {pkg.dir}: {log[-300:]}")
         stores = sorted(glob.glob(str(wt / "**" / ".build" / "**" / "index" / "store"), recursive=True))
         stores = stores or sorted(glob.glob(str(wt / ".build" / "**" / "index" / "store"), recursive=True))
         if not stores:

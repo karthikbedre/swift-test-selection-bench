@@ -58,6 +58,20 @@ def _tree(root: int) -> list[int]:
 
 
 TIMEOUT = 124
+# Xcode 27's build service occasionally stalls with no CPU use; a stalled build is stopped and retried once.
+BUILD_TIMEOUT = int(os.environ.get("TSEL_BUILD_TIMEOUT", "1800"))
+
+
+def build_with_retry(cmd: list[str], cwd: str, timeout: int | None = None) -> tuple[int, float, str]:
+    """Run a build, retrying once if it hits the timeout. Returns the last attempt's code and log and the
+    total time, so a retry shows up in the recorded seconds."""
+    limit = min(timeout or BUILD_TIMEOUT, BUILD_TIMEOUT)
+    code, secs, log = _run(cmd, cwd, limit)
+    if code == TIMEOUT:
+        code, more, log = _run(cmd, cwd, limit)
+        secs += more
+        log = "retried after a stalled build\n" + log
+    return code, secs, log
 # A test target that runs longer than this is stopped and counted as failing. A seeded bug can make a
 # test wait forever (a server that never answers), and that is a catch, not a reason to wait an hour.
 TEST_TIMEOUT = int(os.environ.get("TSEL_TEST_TIMEOUT", "600"))
@@ -121,7 +135,7 @@ def run_oracle(repo: str, rev: str, out_path: str, package_dirs: list[str] | Non
             record["pins"] = [f"{n}={v}" for n, v in pins()]
         for d in package_dirs:
             apply_pins(str(wt / d))
-            code, secs, log = _run(["swift", "build", "--build-tests"], str(wt / d), timeout)
+            code, secs, log = build_with_retry(["swift", "build", "--build-tests"], str(wt / d), timeout)
             record["build"][d] = {"code": code, "seconds": round(secs, 2), "log_tail": _tail(log) if code else ""}
         for tid in sorted(graph.test_targets()):
             t = graph.targets[tid]
