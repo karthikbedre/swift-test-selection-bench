@@ -1,0 +1,13 @@
+subject,reason,commits,total_commits,share
+swift-argument-parser,Build setting or CI file,40,300,0.133
+swift-argument-parser,Package manifest,21,300,0.07
+swift-argument-parser,File no target owns,13,300,0.043
+swift-nio,Build setting or CI file,17,100,0.17
+swift-nio,Package manifest,8,100,0.08
+swift-nio,File no target owns,13,100,0.13
+Hummingbird,Build setting or CI file,42,100,0.42
+Hummingbird,Package manifest,13,100,0.13
+Hummingbird,File no target owns,7,100,0.07
+Civitas,Build setting or CI file,1,28,0.036
+Civitas,Package manifest,1,28,0.036
+Civitas,File no target owns,1,28,0.036

@@ -89,6 +89,7 @@ scripts/units-study.py ../subjects/swift-argument-parser results/macos/swift-arg
 scripts/rebuild-study.py ../subjects/civitas 7f25fc0307c08ba759423d03986776c8ac276a84 28 results/macos/civitas-rebuild
 scripts/run-traps.py results/macos/traps
 scripts/report.py results/macos > results/macos/REPORT.md
+pip install -e '.[figures]' && scripts/figures.py results/macos results/macos/figures
 ```
 
 Step-by-step instructions, expected run times and what each run records: [docs/mac-mini.md](docs/mac-mini.md) and [docs/running.md](docs/running.md). Selection alone needs only Python and git, because files are read from git history:
@@ -108,6 +109,7 @@ tsel select ../swift-nio HEAD~1 HEAD    # what each selector picks for the last 
 | `results/macos/<subject>-classes/` | Test-class pass: per-class selections and per-class oracle results |
 | `results/macos/civitas-rebuild/rebuild.jsonl` | Per edit: modules Bazel and SwiftPM recompiled, Bazel tests rerun |
 | `results/macos/traps/traps.jsonl` | Per trap: validity and each selector's choice |
+| `results/macos/figures/` | The six paper figures (300 dpi PNG), each with a CSV of exactly the values it plots |
 | [`results/pilot-linux-swift6.0.3/`](results/pilot-linux-swift6.0.3) | Linux pilot, not comparable with the Mac runs |
 
 ## Repository layout

@@ -1,0 +1,7 @@
+subject,selector,commits,class_test_s,graph_class_test_s,relative_to_graph
+swift-argument-parser,Tree-sitter,60,429.7,526.8,0.816
+swift-argument-parser,Compiler index,60,384.9,526.8,0.731
+swift-nio,Tree-sitter,52,1613.8,1908.4,0.846
+swift-nio,Compiler index,52,1553.2,1908.4,0.814
+Hummingbird,Tree-sitter,28,3652.2,3905.8,0.935
+Hummingbird,Compiler index,28,3366.1,3905.8,0.862

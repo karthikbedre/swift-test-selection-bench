@@ -1,0 +1,5 @@
+subject,commits,test_time_saved_s_per_commit,index_build_s_per_commit,query_s_per_commit,net_s_per_commit
+swift-argument-parser,300,4.63,1.72,0.23,2.67
+swift-nio,100,29.87,5.29,0.83,23.74
+Hummingbird,100,2.95,2.12,0.67,0.17
+Civitas,28,20.19,5.6,0.23,14.36
