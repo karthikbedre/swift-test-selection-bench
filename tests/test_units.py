@@ -83,3 +83,17 @@ def test_nested_suite_is_its_outer_type(tmp_path):
                        check=True, capture_output=True)
     tu = target_units(repo, "HEAD", graph, ".::CoreTests")
     assert "UtilsTests" in tu.units and "FlatTests" not in tu.units
+
+
+def test_indirect_xctest_subclass_and_spaces_in_paths(tmp_path):
+    repo, graph = make(tmp_path)
+    base = "import XCTest\n\nclass BaseTests: XCTestCase {}\n"
+    typed = "final class TypedTests: BaseTests {\n    func testA() {}\n}\n"
+    (Path(repo) / "Tests/CoreTests/Base.swift").write_text(base)
+    (Path(repo) / "Tests/CoreTests/Sub Folder").mkdir()
+    (Path(repo) / "Tests/CoreTests/Sub Folder/Typed.swift").write_text(typed)
+    for args in (["add", "-A"], ["commit", "-qm", "typed"]):
+        subprocess.run(["git", "-C", repo, "-c", "user.name=t", "-c", "user.email=t@example.invalid", *args],
+                       check=True, capture_output=True)
+    tu = target_units(repo, "HEAD", graph, ".::CoreTests")
+    assert tu.units["TypedTests"] == {"Tests/CoreTests/Sub Folder/Typed.swift"}

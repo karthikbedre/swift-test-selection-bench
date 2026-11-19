@@ -34,7 +34,7 @@ class TargetUnits:
 
 def _ls(repo: str, rev: str, path: str) -> list[str]:
     out = subprocess.run(["git", "-C", repo, "ls-tree", "-r", "--name-only", rev, "--", path],
-                         capture_output=True, text=True).stdout.split()
+                         capture_output=True, text=True).stdout.splitlines()   # paths may hold spaces
     return [p for p in out if p.endswith(".swift")]
 
 
@@ -45,8 +45,19 @@ def _show(repo: str, rev: str, path: str) -> bytes:
 def target_units(repo: str, rev: str, graph: Graph, tid: str) -> TargetUnits:
     t = graph.targets[tid]
     tu = TargetUnits()
-    for path in _ls(repo, rev, t.path):
-        facts = analyze(_show(repo, rev, path))
+    paths = _ls(repo, rev, t.path)
+    facts_of = {path: analyze(_show(repo, rev, path)) for path in paths}
+    # classes that reach XCTestCase through other classes in the target (class B: A, class A: XCTestCase)
+    bases = {d.name: set(d.inherits) for f in facts_of.values() for d in f.decls
+             if d.owner is None and d.kind in ("class", "actor")}
+    xctest = {"XCTestCase"}
+    while True:
+        more = {n for n, inh in bases.items() if inh & xctest} - xctest
+        if not more:
+            break
+        xctest |= more
+    for path in paths:
+        facts = facts_of[path]
         tu.spelled[path] = set(facts.spelled)
         tu.declared[path] = {d.name for d in facts.decls}
         # a nested suite belongs to its outermost type, which is how the oracle names it
@@ -64,7 +75,7 @@ def target_units(repo: str, rev: str, graph: Graph, tid: str) -> TargetUnits:
         for d in facts.decls:
             top = d.owner is None
             if top and d.kind in TYPE_KINDS and (
-                    "XCTestCase" in d.inherits or "Suite" in d.attributes or d.name in test_owners):
+                    set(d.inherits) & xctest or "Suite" in d.attributes or d.name in test_owners):
                 tu.units.setdefault(d.name, set()).add(path)
                 found = True
             elif top and d.kind == "func" and "Test" in d.attributes:
@@ -79,7 +90,7 @@ def target_units(repo: str, rev: str, graph: Graph, tid: str) -> TargetUnits:
             tu.helpers.add(path)
     # an extension of an XCTestCase subclass from another file carries test methods without attributes
     for path in list(tu.helpers):
-        owners = {d.name for d in analyze(_show(repo, rev, path)).decls if d.kind == "extension"}
+        owners = {d.name for d in facts_of[path].decls if d.kind == "extension"}
         hit = owners & set(tu.units)
         for u in hit:
             tu.units[u].add(path)
