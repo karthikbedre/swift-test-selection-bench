@@ -12,10 +12,13 @@ from tsel.mutate import candidates, make_mutant
 from tsel.oracle import run_oracle
 from tsel.replay import commits, manifests_at
 from tsel.selectors import SELECTORS
+from tsel.selectors.hash_cache import _has_bazel
 
 repo, end, count, out = sys.argv[1], sys.argv[2], int(sys.argv[3]), Path(sys.argv[4])
 out.mkdir(parents=True, exist_ok=True)
-names = ["run-all", "package-graph", "tree-sitter", "compiler-index"]
+names = ["run-all", "package-graph", "tree-sitter", "compiler-index", "interface-only"]
+if _has_bazel(repo, end):
+    names.append("hash-cache")
 insts = {n: SELECTORS[n]() for n in names}
 wt = str(out / "oracle-worktree")
 random.seed(7)
@@ -37,12 +40,18 @@ def select(base, head, kind, meta):
     sel_fh.flush()
 
 
+first_builds: list[bool] = []   # only commits built in this invocation
 for i, (base, head) in enumerate(zip(revs, revs[1:])):
     if head in done:
         continue
     t0 = time.time()
     select(base, head, "real", {})
-    run_oracle(repo, head, str(out / "oracle.jsonl"), worktree=wt)
+    record = run_oracle(repo, head, str(out / "oracle.jsonl"), worktree=wt)
+    built = all(b["code"] == 0 for b in record["build"].values())
+    first_builds.append(built)
+    if len(first_builds) == 3 and not any(first_builds):
+        tail = next(iter(record["build"].values()))["log_tail"][-1500:]
+        sys.exit(f"stopping: the first three commits all failed to build, so the run would record nothing.\n{tail}")
     cands = candidates(repo, base, head)
     random.shuffle(cands)
     picked, seen = [], set()

@@ -1,0 +1,7 @@
+{
+  "id": "T013",
+  "construct": "default argument value: the default is emitted into every caller, so changing it in Core changes an unchanged caller's behaviour",
+  "edit": {"file": "Sources/Core/Punctuate.swift", "find": "mark: String = \"!\"", "replace": "mark: String = \"?\""},
+  "must_select": ["GreetingTests"],
+  "may_skip": ["ReportsTests"]
+}

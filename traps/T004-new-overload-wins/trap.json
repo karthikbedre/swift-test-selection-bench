@@ -1,0 +1,7 @@
+{
+  "id": "T004",
+  "construct": "new overload: a more specific function added in Core wins resolution at an unchanged call site in Billing",
+  "edit": {"file": "Sources/Core/Render.swift", "find": "public func render<T>(_ value: T) -> String { \"value:\\(value)\" }\n", "replace": "public func render<T>(_ value: T) -> String { \"value:\\(value)\" }\n\npublic func render(_ value: Int) -> String { \"int:\\(value)\" }\n"},
+  "must_select": ["BillingTests"],
+  "may_skip": ["ReportsTests"]
+}

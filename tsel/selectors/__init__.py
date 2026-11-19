@@ -1,7 +1,8 @@
 from .base import Selection, Selector
 from .package_graph import PackageGraph, RunAll
 from .compiler_index import CompilerIndex
-from .planned import HashCache
+from .interface_only import InterfaceOnly
+from .hash_cache import HashCache
 from .treesitter import TreeSitterSelector
 
 SELECTORS: dict[str, type[Selector]] = {
@@ -9,6 +10,7 @@ SELECTORS: dict[str, type[Selector]] = {
     "package-graph": PackageGraph,
     "tree-sitter": TreeSitterSelector,
     "compiler-index": CompilerIndex,
+    "interface-only": InterfaceOnly,
     "hash-cache": HashCache,
 }
 
