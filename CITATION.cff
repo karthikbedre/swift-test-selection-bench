@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+message: "If you use this benchmark, its trap packages or its results, please cite it as below."
+type: software
+title: "swift-test-selection-bench: an independent benchmark of change-based test selection for Swift"
+authors:
+  - family-names: Bedre
+    given-names: Karthik
+    orcid: "https://orcid.org/0009-0009-1576-3223"
+repository-code: "https://github.com/karthikbedre/swift-test-selection-bench"
+license:
+  - MIT
+  - CC-BY-4.0
+date-released: 2026-11-18
+keywords:
+  - regression test selection
+  - Swift
+  - Swift Package Manager
+  - Tree-sitter
+  - compiler index
+  - Bazel

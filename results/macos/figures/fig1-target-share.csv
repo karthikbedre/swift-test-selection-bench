@@ -1,0 +1,13 @@
+subject,selector,mean_share_of_test_targets,commits
+swift-argument-parser,Package graph,0.7119,300
+swift-argument-parser,Tree-sitter,0.6825,300
+swift-argument-parser,Compiler index,0.656,300
+swift-nio,Package graph,0.67,100
+swift-nio,Tree-sitter,0.6294,100
+swift-nio,Compiler index,0.6094,100
+Hummingbird,Package graph,0.87,100
+Hummingbird,Tree-sitter,0.87,100
+Hummingbird,Compiler index,0.8475,100
+Civitas,Package graph,0.708,28
+Civitas,Tree-sitter,0.5546,28
+Civitas,Compiler index,0.3739,28
