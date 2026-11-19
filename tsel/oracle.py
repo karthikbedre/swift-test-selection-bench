@@ -63,13 +63,13 @@ BUILD_TIMEOUT = int(os.environ.get("TSEL_BUILD_TIMEOUT", "1800"))
 
 
 def build_with_retry(cmd: list[str], cwd: str, timeout: int | None = None) -> tuple[int, float, str]:
-    """Run a build, retrying once if it hits the timeout. Returns the last attempt's code and log and the
-    total time, so a retry shows up in the recorded seconds."""
+    """Run a build, retrying once if it hits the timeout. Returns the last attempt's code, time and log:
+    a stall is the build service's fault, not the cost of the build, so its time is not counted. The log
+    says when a retry happened."""
     limit = min(timeout or BUILD_TIMEOUT, BUILD_TIMEOUT)
     code, secs, log = _run(cmd, cwd, limit)
     if code == TIMEOUT:
-        code, more, log = _run(cmd, cwd, limit)
-        secs += more
+        code, secs, log = _run(cmd, cwd, limit)
         log = "retried after a stalled build\n" + log
     return code, secs, log
 # A test target that runs longer than this is stopped and counted as failing. A seeded bug can make a
