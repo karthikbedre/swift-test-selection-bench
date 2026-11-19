@@ -4,10 +4,16 @@ A small command line tool on [IndexStoreDB](https://github.com/swiftlang/indexst
 
 ## Build
 
-Pick the indexstore-db branch that matches `swift --version`, for example `release/6.0` for Swift 6.0.x. The default, `main`, suits the newest toolchain.
+The indexstore-db branch must match `swift --version`. `scripts/build-index-query.sh` tries `release/<full version>` (such as `release/6.4.2`), then `release/<major.minor>.x`, then `release/<major.minor>` (such as `release/6.0`, the older naming), then `main`, and builds with the first that exists. To pick one by hand:
 
 ```bash
-INDEXSTORE_DB_BRANCH=release/6.0 swift build -c release --package-path tools/index-query
+INDEXSTORE_DB_BRANCH=release/6.4.2 swift build -c release --package-path tools/index-query
+```
+
+Or let the script choose:
+
+```bash
+scripts/build-index-query.sh
 ```
 
 The selector finds the binary at `tools/index-query/.build/release/index-query`, or at `$TSEL_INDEX_QUERY`. It finds `libIndexStore` next to the toolchain's `swift`, or at `$TSEL_LIBINDEXSTORE`.

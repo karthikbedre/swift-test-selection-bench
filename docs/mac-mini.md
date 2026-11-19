@@ -36,17 +36,10 @@ pytest                   # the 3 tests that need the index tool are skipped unti
 
 ## 3. Build the index tool
 
-The indexstore-db branch must match your Swift version.
+The indexstore-db branch must match your Swift version. The script picks it (for Swift 6.4.2 that is `release/6.4.2`) and builds the tool.
 
 ```bash
-v=$(swift --version 2>&1 | sed -n 's/.*Swift version \([0-9]*\.[0-9]*\).*/\1/p' | head -1)
-if git ls-remote --exit-code https://github.com/swiftlang/indexstore-db "refs/heads/release/$v" >/dev/null; then
-  b=release/$v
-else
-  b=main
-fi
-echo "using indexstore-db $b"
-INDEXSTORE_DB_BRANCH=$b swift build -c release --package-path tools/index-query
+scripts/build-index-query.sh
 pytest                   # all tests should now pass, none skipped
 ```
 
@@ -88,7 +81,7 @@ Each run keeps the Mac awake (`caffeinate`). If a run is interrupted, run the sa
 
 | File | What it holds |
 |---|---|
-| `machine.json` | Mac model, chip, cores, memory, macOS, Xcode and Swift versions, harness commit |
+| `machine.json` | Mac model, chip, cores, memory, macOS, Xcode and Swift versions, the indexstore-db branch the index tool was built against, harness commit |
 | `selections.jsonl` | For every commit and seeded bug: what each selector chose, its rules and its deciding time (the compiler index's build time included) |
 | `oracle.jsonl` | For every commit and seeded bug: build time, and every test target's result and time, failures re-run twice |
 | `summary.txt` | Tests selected, test time, deciding time, fallbacks and bugs missed, per selector |
