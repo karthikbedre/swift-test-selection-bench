@@ -97,3 +97,11 @@ def test_indirect_xctest_subclass_and_spaces_in_paths(tmp_path):
                        check=True, capture_output=True)
     tu = target_units(repo, "HEAD", graph, ".::CoreTests")
     assert tu.units["TypedTests"] == {"Tests/CoreTests/Sub Folder/Typed.swift"}
+
+
+def test_changed_snapshot_keeps_the_target_whole(tmp_path):
+    repo, graph = make(tmp_path)
+    units_of = {".::CoreTests": target_units(repo, "HEAD", graph, ".::CoreTests")}
+    hints = {"names": set(), "spellers": set(), "whole": set(), "test_files": {"Tests/CoreTests/Snapshots/a.txt"}}
+    picked, whole = select_units("tree-sitter", {".::CoreTests"}, hints, graph, units_of)
+    assert whole == {".::CoreTests"} and len(picked[".::CoreTests"]) == 3

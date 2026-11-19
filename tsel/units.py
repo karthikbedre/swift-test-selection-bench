@@ -137,6 +137,11 @@ def select_units(name: str, tests: set[str], hints: dict | None, graph: Graph,
             out[tid] = every
             continue
         changed_test_files = {f for f in hints.get("test_files", set()) if graph.owner_of(f) == tid}
+        if any(not f.endswith(".swift") for f in changed_test_files):
+            # a changed snapshot, fixture or resource: no way to tell which class reads it
+            out[tid] = every
+            whole.add(tid)
+            continue
         picked: set[str] | None = None
         if changed_test_files:
             # a changed test file: its own units, and units spelling what it declares if it is a helper
